@@ -1,0 +1,30 @@
+#pragma once
+
+enum class SectionType {
+    EMPTY,
+    UNKNOWN,
+
+    HORIZONTAL_RULE,
+    TITLE,
+
+    CODE_BLOCK,
+    INDENTED_CODE_BLOCK,
+    ORDERED_LIST,
+    QUOTE,
+    TABLE,
+    TEXT,
+    UNORDERED_LIST,
+
+    BOLD,
+    BOLD_ITALIC,
+    ESCAPE,
+    HIGHLIGHT,
+    IMAGE_ALT,
+    IMAGE_URL,
+    INLINE_CODE,
+    ITALIC,
+    LINK_TEXT,
+    LINK_URL,
+    NORMAL,
+    STRIKETHROUGH
+};
