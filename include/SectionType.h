@@ -1,6 +1,8 @@
 #pragma once
 
-enum class SectionType {
+#include "export.h"
+
+enum class MARKDOWNPARSER_API SectionType {
     EMPTY,
     UNKNOWN,
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "export.h"
 #include "SectionType.h"
 
 #include <qcontainerfwd.h>
@@ -9,7 +10,7 @@
 #include <utility>
 #include <variant>
 
-class AbstractSection {
+class MARKDOWNPARSER_API AbstractSection {
 public:
     static constexpr const SectionType type = SectionType::UNKNOWN;
 
@@ -20,7 +21,7 @@ protected:
     virtual QString after() = 0;
 };
 
-class AbstractSection1 : public AbstractSection {
+class MARKDOWNPARSER_API AbstractSection1 : public AbstractSection {
 public:
     static constexpr const SectionType type = SectionType::UNKNOWN;
 
@@ -41,7 +42,7 @@ protected:
     virtual QString after() = 0;
 };
 
-class AbstractSection2 : public AbstractSection {
+class MARKDOWNPARSER_API AbstractSection2 : public AbstractSection {
 public:
     static constexpr const SectionType type = SectionType::UNKNOWN;
 

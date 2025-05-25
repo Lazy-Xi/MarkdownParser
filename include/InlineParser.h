@@ -1,5 +1,6 @@
 #pragma once
 
+#include "export.h"
 #include "SectionType.h"
 
 #include <qchar.h>
@@ -10,7 +11,7 @@
 
 #include <functional>
 
-class InlineParser {
+class MARKDOWNPARSER_API InlineParser {
 public:
     InlineParser() = delete;
     InlineParser(const QString& line) : line(line) {}

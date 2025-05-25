@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.16)
 project(MarkdownParser LANGUAGES CXX)
 
-include(qt.cmake)
+include(cmake/qt.cmake)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,7 +15,16 @@ find_package(Qt${QT_VERSION_MAJOR}
 qt_standard_project_setup()
 
 option(BUILD_SHARED_LIBS "Build shared library" ON)
-option(BUILD_TESTING "Build tests" ON)  
+option(BUILD_TESTING "Build tests" ON)
+
+set(DEFAULT_CSS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/default.css)
+set(DEFAULT_CSS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/default_style_sheet.h)
+
+add_custom_target(generate_style_sheet ALL
+    COMMAND ${CMAKE_COMMAND} -DINPUT="${DEFAULT_CSS_PATH}" -DOUTPUT"=${DEFAULT_CSS_HEADER}"
+        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_style_sheet.cmake"
+    COMMENT "Generating default_style_sheet.h"
+)
 
 set(HEADERS
     "include/export.h"
@@ -60,6 +69,9 @@ else()
     qt_add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
 endif()
 
+add_dependencies(${PROJECT_NAME} generate_style_sheet)
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(${PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::Core)
 
@@ -73,25 +85,19 @@ install(TARGETS ${PROJECT_NAME}
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if(BUILD_TESTING)
+    set(RESOURCE_PATH ${CMAKE_SOURCE_DIR})
+    configure_file(tests/config.h.in config.h)
+
     qt_add_executable(${PROJECT_NAME}_test "tests/main.cpp")
+    target_include_directories(${PROJECT_NAME}_test PRIVATE ${CMAKE_BINARY_DIR})
     target_link_libraries(${PROJECT_NAME}_test PUBLIC ${PROJECT_NAME})
     
     add_custom_target(run_tests ALL
         COMMAND ${CMAKE_COMMAND} -E remove_directory 
             ${CMAKE_SOURCE_DIR}/tests_output
-        COMMAND ${CMAKE_COMMAND} -E copy_directory 
-            ${CMAKE_SOURCE_DIR}/tests/samples
-            ${CMAKE_CURRENT_BINARY_DIR}/samples
         COMMAND ${CMAKE_COMMAND} -E env
             "PATH=${CMAKE_PREFIX_PATH}/bin;$ENV{PATH}"
             ${PROJECT_NAME}_test
-        COMMAND ${CMAKE_COMMAND} -E copy_directory 
-            ${CMAKE_CURRENT_BINARY_DIR}/output
-            ${CMAKE_SOURCE_DIR}/tests_output
-        COMMAND ${CMAKE_COMMAND} -E remove_directory 
-            ${CMAKE_CURRENT_BINARY_DIR}/samples
-        COMMAND ${CMAKE_COMMAND} -E remove_directory 
-            ${CMAKE_CURRENT_BINARY_DIR}/output
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Running conversion tests..."
     )

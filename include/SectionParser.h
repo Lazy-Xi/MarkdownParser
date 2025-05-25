@@ -1,5 +1,6 @@
 #pragma once
 
+#include "export.h"
 #include "section/AbstractSection.h"
 #include "SectionType.h"
 
@@ -10,7 +11,7 @@
 #include <functional>
 #include <variant>
 
-class SectionParser {
+class MARKDOWNPARSER_API SectionParser {
 public:
     SectionParser() = delete;
     SectionParser(QStringListIterator& it) : it(it) {}

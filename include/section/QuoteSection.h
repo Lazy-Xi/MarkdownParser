@@ -1,5 +1,6 @@
 #pragma once
 
+#include "export.h"
 #include "section/AbstractSection.h"
 #include "SectionType.h"
 
@@ -7,7 +8,7 @@
 
 #include <utility>
 
-class QuoteSection : public AbstractSection2 {
+class MARKDOWNPARSER_API QuoteSection : public AbstractSection2 {
 public:
     static constexpr const SectionType type = SectionType::QUOTE;
 

@@ -7,7 +7,7 @@ This is library for Markdown parsing, implemented based on C++ Qt6.
 ### Dependencies
 
 - cmake: version **3.16** minimum
-- Qt: **6.9.0 msvc2022_64** is recommended (Other versions are untested but presumably available)
+- Qt: **6.9.0 msvc2022\_64** is recommended (Other versions are untested but presumably available)
 
 ### Windows
 Only x64 is tested on Windows.

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "export.h"
 #include "section/AbstractSection.h"
 
 #include <qlist.h>
@@ -7,7 +8,7 @@
 
 #include <utility>
 
-class SectionList : public QList<AbstractSection*> {
+class MARKDOWNPARSER_API SectionList : public QList<AbstractSection*> {
 public:
     SectionList() = delete;
     SectionList(const QString& markdown) : markdown(markdown) {}

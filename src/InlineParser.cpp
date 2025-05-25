@@ -81,6 +81,11 @@ void InlineParser::handleChar(qsizetype& i, const QChar& ch) {
 }
 
 void InlineParser::handleNormal(qsizetype& i, const QChar& ch) {
+    if (ch == '\\') {
+        pushState(SectionType::ESCAPE, state.target);
+        return;
+    }
+
     struct Pattern {
         QString marker;
         SectionType type;

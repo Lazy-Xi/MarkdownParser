@@ -1,5 +1,6 @@
 #pragma once
 
+#include "export.h"
 #include "section/AbstractSection.h"
 #include "SectionType.h"
 
@@ -8,7 +9,7 @@
 
 #include <utility>
 
-class HorizontalRuleSection : public AbstractSection1 {
+class MARKDOWNPARSER_API HorizontalRuleSection : public AbstractSection1 {
 public:
     static constexpr const SectionType type = SectionType::HORIZONTAL_RULE;
 
