@@ -37,13 +37,13 @@ void MarkdownParser::setStyleSheet(const QString& style_sheet) {
 }
 
 QString MarkdownParser::before(const QString& title) {
-    return QString(R"(<html lang="en"><head><title>%1</title><style>%2</style></head><body><article>)")
+    return QString(R"(<html><head><title>%1</title><style>%2</style></head><body>)")
         .arg(title)
         .arg(this->style_sheet);
 }
 
 QString MarkdownParser::after() {
-    return "</article></body></html>";
+    return "</body></html>";
 }
 
 void MarkdownParser::compressStyleSheet() {

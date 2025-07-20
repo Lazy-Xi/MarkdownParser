@@ -83,6 +83,14 @@ public:
     **/
     static QRegularExpression createUnorderedListRegex(bool ignore_start_space = false);
 
+    /**
+    * @brief 创建用于匹配 Html 的正则表达式
+    *
+    * 捕获组说明：
+    *  - capture 1: 标签名称
+    **/
+    static QRegularExpression createHtmlBlockRegex();
+
     static bool isHorizontalRule(const QString& line);
     static bool isTitle(const QString& line);
 
@@ -93,6 +101,9 @@ public:
     static bool isTable(const QString& line);
     static bool isTableHeaderSeparator(const QString& line);
     static bool isUnorderedList(const QString& line);
+    static bool isHtmlBlock(const QString& line);
+
+    static bool isHtmlVoidTag(const QString& tag);
 
 private:
     static const QMap<SectionType, std::function<bool(const QString&)>> checks;

@@ -36,9 +36,9 @@ QString SectionList::toHtml() {
 }
 
 QString SectionList::before() {
-    return "";
+    return "<article>";
 }
 
 QString SectionList::after() {
-    return "";
+    return "</article>";
 }

@@ -30,6 +30,7 @@ private:
             { SectionType::CODE_BLOCK, std::bind(&SectionParser::parseCodeBlock, this) },
             { SectionType::INDENTED_CODE_BLOCK, std::bind(&SectionParser::parseIndentedCodeBlock, this) },
             { SectionType::HORIZONTAL_RULE, [this]() { return this->parseSingleLine(SectionType::HORIZONTAL_RULE); } },
+            { SectionType::HTML, std::bind(&SectionParser::parseHtmlBlock, this) },
             { SectionType::ORDERED_LIST, [this]() { return this->parseList(SectionType::ORDERED_LIST); } },
             { SectionType::QUOTE, std::bind(&SectionParser::parseQuote, this) },
             { SectionType::TABLE, [this]() { return this->parseTable(false); } },
@@ -40,6 +41,7 @@ private:
 
     AbstractSection1::LinesType parseSingleLine(SectionType type);
     AbstractSection1::LinesType parseCodeBlock();
+    AbstractSection1::LinesType parseHtmlBlock();
     AbstractSection1::LinesType parseIndentedCodeBlock();
     AbstractSection1::LinesType parseTable(bool trimmed = false);
     AbstractSection1::LinesType parseText();

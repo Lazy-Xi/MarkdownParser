@@ -9,7 +9,7 @@
 #include <qiodevice.h>
 #include <qlogging.h>
 #include <qstring.h>
-#include <qstringconverter.h>
+#include <qstringconverter_base.h>
 #include <qtextstream.h>
 
 #include <exception>
@@ -62,15 +62,11 @@ QString readFile(const QString& path, const char* encoding) {
     }
 
     QTextStream in(&file);
+    in.setEncoding(QStringConverter::Utf8);
     QString content = in.readAll();
     file.close();
 
-    QStringDecoder decoder(encoding);
-    if (!decoder.isValid()) {
-        throw std::runtime_error("Unsupported encoding");
-    }
-
-    return decoder.decode(content.toUtf8());
+    return content;
 }
 
 void writeFile(const QString& path, const QString& content) {
@@ -80,6 +76,7 @@ void writeFile(const QString& path, const QString& content) {
     }
 
     QTextStream out(&file);
+    out.setEncoding(QStringConverter::Utf8);
     out << content;
     file.close();
 }

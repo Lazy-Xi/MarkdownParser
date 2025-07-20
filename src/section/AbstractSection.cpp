@@ -6,8 +6,11 @@
 #include <utility>
 #include <variant>
 
-AbstractSection1::AbstractSection1(const LinesType& lines) : lines(lines) {
-    for (QString& line : this->lines) { line = line.toHtmlEscaped(); }
+AbstractSection1::AbstractSection1(const LinesType& lines, bool escape_html)
+    : lines(lines) {
+    if (escape_html) {
+        for (QString& line : this->lines) { line = line.toHtmlEscaped(); }
+    }
 }
 
 AbstractSection1& AbstractSection1::operator=(const AbstractSection1& other) {

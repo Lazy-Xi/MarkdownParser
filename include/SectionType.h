@@ -10,6 +10,7 @@ enum class MARKDOWNPARSER_API SectionType {
     TITLE,
 
     CODE_BLOCK,
+    HTML,
     INDENTED_CODE_BLOCK,
     ORDERED_LIST,
     QUOTE,

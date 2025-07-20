@@ -23,11 +23,8 @@ protected:
 
 class MARKDOWNPARSER_API AbstractSection1 : public AbstractSection {
 public:
-    static constexpr const SectionType type = SectionType::UNKNOWN;
-
     using LinesType = QStringList;
-
-    AbstractSection1(const LinesType& lines);
+    explicit AbstractSection1(const LinesType& lines, bool escape_html = true);
     AbstractSection1(const AbstractSection1& other) : lines(other.lines) {}
     AbstractSection1(AbstractSection1&& other) noexcept : lines(std::move(other.lines)) {}
     AbstractSection1& operator=(const AbstractSection1& other);
