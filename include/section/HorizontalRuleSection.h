@@ -11,18 +11,18 @@
 
 class MARKDOWNPARSER_API HorizontalRuleSection : public AbstractSection1 {
 public:
-    static constexpr const SectionType type = SectionType::HORIZONTAL_RULE;
+	static constexpr const SectionType type = SectionType::HORIZONTAL_RULE;
 
-    HorizontalRuleSection() = delete;
-    HorizontalRuleSection(const QStringList& lines) : AbstractSection1(lines) {}
-    HorizontalRuleSection(const HorizontalRuleSection& other) : AbstractSection1(other) {}
-    HorizontalRuleSection(HorizontalRuleSection&& other) noexcept : AbstractSection1(std::move(other)) {}
-    HorizontalRuleSection& operator=(const HorizontalRuleSection&);
-    HorizontalRuleSection& operator=(HorizontalRuleSection&&) noexcept;
+	HorizontalRuleSection() = delete;
+	HorizontalRuleSection(const QStringList& lines) : AbstractSection1(lines) {}
+	HorizontalRuleSection(const HorizontalRuleSection& other) : AbstractSection1(other) {}
+	HorizontalRuleSection(HorizontalRuleSection&& other) noexcept : AbstractSection1(std::move(other)) {}
+	HorizontalRuleSection& operator=(const HorizontalRuleSection&);
+	HorizontalRuleSection& operator=(HorizontalRuleSection&&) noexcept;
 
-    QString toHtml();
+	QString toHtml();
 
 private:
-    QString before();
-    QString after();
+	QString before();
+	QString after();
 };

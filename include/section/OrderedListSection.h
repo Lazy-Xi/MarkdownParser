@@ -10,18 +10,18 @@
 
 class MARKDOWNPARSER_API OrderedListSection : public AbstractSection2 {
 public:
-    static constexpr const SectionType type = SectionType::ORDERED_LIST;
+	static constexpr const SectionType type = SectionType::ORDERED_LIST;
 
-    OrderedListSection() = delete;
-    OrderedListSection(const LinesType& lines) : AbstractSection2(lines) {}
-    OrderedListSection(const OrderedListSection& other) : AbstractSection2(other) {}
-    OrderedListSection(OrderedListSection&& other) noexcept : AbstractSection2(std::move(other)) {}
-    OrderedListSection& operator=(const OrderedListSection&);
-    OrderedListSection& operator=(OrderedListSection&&) noexcept;
+	OrderedListSection() = delete;
+	OrderedListSection(const LinesType& lines) : AbstractSection2(lines) {}
+	OrderedListSection(const OrderedListSection& other) : AbstractSection2(other) {}
+	OrderedListSection(OrderedListSection&& other) noexcept : AbstractSection2(std::move(other)) {}
+	OrderedListSection& operator=(const OrderedListSection&);
+	OrderedListSection& operator=(OrderedListSection&&) noexcept;
 
-    QString toHtml();
+	QString toHtml();
 
 private:
-    QString before();
-    QString after();
+	QString before();
+	QString after();
 };

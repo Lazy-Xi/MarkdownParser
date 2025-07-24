@@ -15,7 +15,7 @@ find_package(Qt${QT_VERSION_MAJOR}
 qt_standard_project_setup()
 
 option(BUILD_SHARED_LIBS "Build shared library" ON)
-option(BUILD_TESTING "Build tests" ON)
+option(BUILD_SAMPLES "Build samples" ON)
 
 set(DEFAULT_CSS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/default.css)
 set(DEFAULT_CSS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/default_style_sheet.h)
@@ -44,6 +44,8 @@ set(HEADERS
     "include/section/TextSection.h"
     "include/section/TitleSection.h"
     "include/section/UnorderedListSection.h"
+    "include/utils/RegexUtils.h"
+    "include/utils/TypeUtils.h"
 )
 
 set(SOURCES
@@ -62,6 +64,8 @@ set(SOURCES
     "src/section/TextSection.cpp"
     "src/section/TitleSection.cpp"
     "src/section/UnorderedListSection.cpp"
+    "src/utils/RegexUtils.cpp"
+    "src/utils/TypeUtils.cpp"
 )
 
 if(BUILD_SHARED_LIBS)
@@ -86,22 +90,22 @@ install(TARGETS ${PROJECT_NAME}
 
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
-if(BUILD_TESTING)
+if(BUILD_SAMPLES)
     set(RESOURCE_PATH ${CMAKE_SOURCE_DIR})
-    configure_file(tests/config.h.in config.h)
+    configure_file(samples/config.h.in config.h)
 
-    qt_add_executable(${PROJECT_NAME}_test "tests/main.cpp")
-    target_include_directories(${PROJECT_NAME}_test PRIVATE ${CMAKE_BINARY_DIR})
-    target_link_libraries(${PROJECT_NAME}_test PUBLIC ${PROJECT_NAME})
+    qt_add_executable(${PROJECT_NAME}_sample "samples/main.cpp")
+    target_include_directories(${PROJECT_NAME}_sample PRIVATE ${CMAKE_BINARY_DIR})
+    target_link_libraries(${PROJECT_NAME}_sample PUBLIC ${PROJECT_NAME})
     
-    add_custom_target(run_tests ALL
+    add_custom_target(run_sample ALL
         COMMAND ${CMAKE_COMMAND} -E remove_directory 
-            ${CMAKE_SOURCE_DIR}/tests_output
+            ${CMAKE_SOURCE_DIR}/samples_output
         COMMAND ${CMAKE_COMMAND} -E env
             "PATH=${CMAKE_PREFIX_PATH}/bin;$ENV{PATH}"
-            ${PROJECT_NAME}_test
+            ${PROJECT_NAME}_sample
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Running conversion tests..."
     )
-    add_dependencies(run_tests ${PROJECT_NAME}_test)
+    add_dependencies(run_sample ${PROJECT_NAME}_sample)
 endif()

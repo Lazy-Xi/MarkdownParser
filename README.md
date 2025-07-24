@@ -28,9 +28,9 @@ CMake options:
 | Option              | Description                                                                                         | Default |
 |---------------------|-----------------------------------------------------------------------------------------------------|---------|
 | `BUILD_SHARED_LIBS` | ON: build a shared link library; OFF: build a static link library.                                  | `ON`    |
-| `BUILD_TESTING`     | Build tests.                                                                                        | `ON`    |
+| `BUILD_SAMPLES`     | Build samples.                                                                                      | `ON`    |
 | `CMAKE_PREFIX_PATH` | Path to find dependencies. Must be set to the installation directory of the Qt kit you want to use. |         |
 
-## Tests Samples
+## About Samples
 
-Tips: Please be sure to save sample `.md` file with `UTF-8`.
+Please be sure to save sample `.md` file with `UTF-8`.

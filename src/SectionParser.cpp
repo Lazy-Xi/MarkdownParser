@@ -4,6 +4,8 @@
 #include "section/TextSection.h"
 #include "SectionFactory.h"
 #include "SectionType.h"
+#include "utils/RegexUtils.h"
+#include "utils/TypeUtils.h"
 
 #include <qchar.h>
 #include <qcontainerfwd.h>
@@ -40,7 +42,7 @@ AbstractSection1::LinesType SectionParser::parseCodeBlock() {
 	it.next();
 	while (it.hasNext()) {
 		const QString& line = it.next();
-		if (SectionFactory::isCodeBlock(line)) { break; }
+		if (TypeUtils::isCodeBlock(line)) { break; }
 		lines.append(line);
 	}
 	return lines;
@@ -83,7 +85,7 @@ AbstractSection1::LinesType SectionParser::parseSingleLine(SectionType type) {
 AbstractSection1::LinesType SectionParser::parseTable(bool trimmed) {
 	QStringList lines{};
 	while (it.hasNext()) {
-		if (!SectionFactory::isTable(it.peekNext())) { break; }
+		if (!TypeUtils::isTable(it.peekNext())) { break; }
 		lines.append(it.next());
 	}
 	return lines;
@@ -197,7 +199,7 @@ AbstractSection2::LinesType SectionParser::parseQuote() {
 		if (finished_types.contains(type)) { break; }
 		if (type == SectionType::QUOTE) {
 			QStringList _lines{};
-			QRegularExpression re(SectionFactory::createQuoteRegex());
+			QRegularExpression re(RegexUtils::quote());
 			_lines.append(re.match(line).captured(1));
 			it.next();
 			while (it.hasNext()) {
@@ -232,7 +234,7 @@ AbstractSection* SectionParser::tryParseTable(bool trimmed) {
 		const QString& line = trimmedTransform(it.peekNext(), trimmed);
 		const SectionType& type = SectionFactory::getLineType(line);
 		if (type != SectionType::TABLE) { break; }
-		else if (SectionFactory::isTableHeaderSeparator(line)) {
+		else if (TypeUtils::isTableHeaderSeparator(line)) {
 			is_seperator_break = true;
 			break;
 		}
@@ -276,7 +278,7 @@ AbstractSection1::LinesType SectionParser::parseHtmlBlock() {
 		auto void_tag_match = void_tag_regex.match(line);
 		if (void_tag_match.hasMatch()) {
 			const QString& tag = void_tag_match.captured(1);
-			if (line.trimmed().endsWith("/>") || SectionFactory::isHtmlVoidTag(tag)) {
+			if (line.trimmed().endsWith("/>") || TypeUtils::isHtmlVoidTag(tag)) {
 				if (needBreak()) {
 					break;
 				}
@@ -287,7 +289,7 @@ AbstractSection1::LinesType SectionParser::parseHtmlBlock() {
 		auto start_tag_match = start_tag_regex.match(line);
 		if (start_tag_match.hasMatch()) {
 			const QString& tag = start_tag_match.captured(1);
-			if (SectionFactory::isHtmlVoidTag(tag) && !line.trimmed().endsWith("/>")) {
+			if (TypeUtils::isHtmlVoidTag(tag) && !line.trimmed().endsWith("/>")) {
 				if (needBreak()) {
 					break;
 				}

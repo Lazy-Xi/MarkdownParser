@@ -11,22 +11,22 @@
 
 class MARKDOWNPARSER_API TitleSection : public AbstractSection1 {
 public:
-    static constexpr const SectionType type = SectionType::TITLE;
+	static constexpr const SectionType type = SectionType::TITLE;
 
-    TitleSection() = delete;
-    TitleSection(const QStringList& lines) : AbstractSection1(lines) {}
-    TitleSection(const TitleSection& other) : AbstractSection1(other) {}
-    TitleSection(TitleSection&& other) noexcept : AbstractSection1(std::move(other)) {}
-    TitleSection& operator=(const TitleSection&);
-    TitleSection& operator=(TitleSection&&) noexcept;
+	TitleSection() = delete;
+	TitleSection(const QStringList& lines) : AbstractSection1(lines) {}
+	TitleSection(const TitleSection& other) : AbstractSection1(other) {}
+	TitleSection(TitleSection&& other) noexcept : AbstractSection1(std::move(other)) {}
+	TitleSection& operator=(const TitleSection&);
+	TitleSection& operator=(TitleSection&&) noexcept;
 
-    QString toHtml();
+	QString toHtml();
 
 private:
-    short level = -1;
+	short level = -1;
 
-    QString before();
-    QString after();
+	QString before();
+	QString after();
 
-    short getLevel();
+	short getLevel();
 };

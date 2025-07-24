@@ -11,18 +11,18 @@
 
 class MARKDOWNPARSER_API TextSection : public AbstractSection1 {
 public:
-    static constexpr const SectionType type = SectionType::TEXT;
+	static constexpr const SectionType type = SectionType::TEXT;
 
-    TextSection() = delete;
-    TextSection(const QStringList& lines) : AbstractSection1(lines) {}
-    TextSection(const TextSection& other) : AbstractSection1(other) {}
-    TextSection(TextSection&& other) noexcept : AbstractSection1(std::move(other)) {}
-    TextSection& operator=(const TextSection&);
-    TextSection& operator=(TextSection&&) noexcept;
+	TextSection() = delete;
+	TextSection(const QStringList& lines) : AbstractSection1(lines) {}
+	TextSection(const TextSection& other) : AbstractSection1(other) {}
+	TextSection(TextSection&& other) noexcept : AbstractSection1(std::move(other)) {}
+	TextSection& operator=(const TextSection&);
+	TextSection& operator=(TextSection&&) noexcept;
 
-    QString toHtml();
+	QString toHtml();
 
 private:
-    QString before();
-    QString after();
+	QString before();
+	QString after();
 };

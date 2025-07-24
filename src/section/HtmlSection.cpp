@@ -25,10 +25,10 @@ QString HtmlSection::toHtml() {
 		.arg(this->after());
 }
 
-QString HtmlSection::before() { 
-	return "<div>"; 
+QString HtmlSection::before() {
+	return "<div>";
 }
 
-QString HtmlSection::after() { 
-	return "</div>"; 
+QString HtmlSection::after() {
+	return "</div>";
 }

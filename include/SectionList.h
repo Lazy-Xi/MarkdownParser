@@ -10,18 +10,18 @@
 
 class MARKDOWNPARSER_API SectionList : public QList<AbstractSection*> {
 public:
-    SectionList() = delete;
-    SectionList(const QString& markdown) : markdown(markdown) {}
-    SectionList(const SectionList& other) : markdown(other.markdown) {}
-    SectionList(SectionList&& other) noexcept : markdown(std::move(other.markdown)) {}
-    SectionList& operator=(const SectionList&);
-    SectionList& operator=(SectionList&&) noexcept;
+	SectionList() = delete;
+	SectionList(const QString& markdown) : markdown(markdown) {}
+	SectionList(const SectionList& other) : markdown(other.markdown) {}
+	SectionList(SectionList&& other) noexcept : markdown(std::move(other.markdown)) {}
+	SectionList& operator=(const SectionList&);
+	SectionList& operator=(SectionList&&) noexcept;
 
-    QString toHtml();
+	QString toHtml();
 
 private:
-    QString markdown;
+	QString markdown;
 
-    QString before();
-    QString after();
+	QString before();
+	QString after();
 };

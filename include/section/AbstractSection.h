@@ -12,50 +12,50 @@
 
 class MARKDOWNPARSER_API AbstractSection {
 public:
-    static constexpr const SectionType type = SectionType::UNKNOWN;
+	static constexpr const SectionType type = SectionType::UNKNOWN;
 
-    virtual QString toHtml() = 0;
+	virtual QString toHtml() = 0;
 
 protected:
-    virtual QString before() = 0;
-    virtual QString after() = 0;
+	virtual QString before() = 0;
+	virtual QString after() = 0;
 };
 
 class MARKDOWNPARSER_API AbstractSection1 : public AbstractSection {
 public:
-    using LinesType = QStringList;
-    explicit AbstractSection1(const LinesType& lines, bool escape_html = true);
-    AbstractSection1(const AbstractSection1& other) : lines(other.lines) {}
-    AbstractSection1(AbstractSection1&& other) noexcept : lines(std::move(other.lines)) {}
-    AbstractSection1& operator=(const AbstractSection1& other);
-    AbstractSection1& operator=(AbstractSection1&& other) noexcept;
+	using LinesType = QStringList;
+	explicit AbstractSection1(const LinesType& lines, bool escape_html = true);
+	AbstractSection1(const AbstractSection1& other) : lines(other.lines) {}
+	AbstractSection1(AbstractSection1&& other) noexcept : lines(std::move(other.lines)) {}
+	AbstractSection1& operator=(const AbstractSection1& other);
+	AbstractSection1& operator=(AbstractSection1&& other) noexcept;
 
-    virtual QString toHtml() = 0;
+	virtual QString toHtml() = 0;
 
 protected:
-    LinesType lines;
+	LinesType lines;
 
-    virtual QString before() = 0;
-    virtual QString after() = 0;
+	virtual QString before() = 0;
+	virtual QString after() = 0;
 };
 
 class MARKDOWNPARSER_API AbstractSection2 : public AbstractSection {
 public:
-    static constexpr const SectionType type = SectionType::UNKNOWN;
+	static constexpr const SectionType type = SectionType::UNKNOWN;
 
-    using LinesType = QList<std::variant<QString, AbstractSection*>>;
+	using LinesType = QList<std::variant<QString, AbstractSection*>>;
 
-    AbstractSection2(const LinesType& lines);
-    AbstractSection2(const AbstractSection2& other) : lines(other.lines) {}
-    AbstractSection2(AbstractSection2&& other) noexcept : lines(std::move(other.lines)) {}
-    AbstractSection2& operator=(const AbstractSection2& other);
-    AbstractSection2& operator=(AbstractSection2&& other) noexcept;
+	AbstractSection2(const LinesType& lines);
+	AbstractSection2(const AbstractSection2& other) : lines(other.lines) {}
+	AbstractSection2(AbstractSection2&& other) noexcept : lines(std::move(other.lines)) {}
+	AbstractSection2& operator=(const AbstractSection2& other);
+	AbstractSection2& operator=(AbstractSection2&& other) noexcept;
 
-    virtual QString toHtml() = 0;
+	virtual QString toHtml() = 0;
 
 protected:
-    LinesType lines;
+	LinesType lines;
 
-    virtual QString before() = 0;
-    virtual QString after() = 0;
+	virtual QString before() = 0;
+	virtual QString after() = 0;
 };

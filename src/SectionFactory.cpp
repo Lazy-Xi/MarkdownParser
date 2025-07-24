@@ -11,10 +11,9 @@
 #include "section/TitleSection.h"
 #include "section/UnorderedListSection.h"
 #include "SectionType.h"
+#include "utils/TypeUtils.h"
 
 #include <qmap.h>
-#include <qregularexpression.h>
-#include <qset.h>
 #include <qstring.h>
 
 #include <functional>
@@ -44,13 +43,13 @@ const QMap<SectionType, std::function<AbstractSection* (const RawSection&)>> Sec
 };
 
 const QMap<SectionType, std::function<bool(const QString&)>> SectionFactory::checks = {
-	{ SectionType::HTML, &SectionFactory::isHtmlBlock },
-	{ SectionType::INDENTED_CODE_BLOCK, SectionFactory::isIndentedCodeBlock },
-	{ SectionType::HORIZONTAL_RULE, SectionFactory::isHorizontalRule },
-	{ SectionType::TITLE, SectionFactory::isTitle },
-	{ SectionType::CODE_BLOCK, SectionFactory::isCodeBlock },
-	{ SectionType::QUOTE, SectionFactory::isQuote },
-	{ SectionType::TABLE, SectionFactory::isTable },
+	{ SectionType::HTML, TypeUtils::isHtmlBlock },
+	{ SectionType::INDENTED_CODE_BLOCK, TypeUtils::isIndentedCodeBlock },
+	{ SectionType::HORIZONTAL_RULE, TypeUtils::isHorizontalRule },
+	{ SectionType::TITLE, TypeUtils::isTitle },
+	{ SectionType::CODE_BLOCK, TypeUtils::isCodeBlock },
+	{ SectionType::QUOTE, TypeUtils::isQuote },
+	{ SectionType::TABLE, TypeUtils::isTable },
 	{ SectionType::EMPTY, [](const QString& line) { return line.trimmed().isEmpty(); } },
 };
 
@@ -60,8 +59,8 @@ AbstractSection* SectionFactory::createSection(const RawSection& section) {
 }
 
 SectionType SectionFactory::getLineType(const QString& line) {
-	bool is_ordered_list = SectionFactory::isOrderedList(line),
-		is_unordered_list = SectionFactory::isUnorderedList(line);
+	bool is_ordered_list = TypeUtils::isOrderedList(line),
+		is_unordered_list = TypeUtils::isUnorderedList(line);
 
 	if (is_ordered_list || is_unordered_list) {
 		return is_ordered_list ? SectionType::ORDERED_LIST : SectionType::UNORDERED_LIST;
@@ -74,96 +73,4 @@ SectionType SectionFactory::getLineType(const QString& line) {
 	}
 
 	return SectionType::TEXT;
-}
-
-QRegularExpression SectionFactory::createIndentedCodeBlockRegex() {
-	return QRegularExpression(R"(^ {4}(.*)$)");
-}
-
-QRegularExpression SectionFactory::createHorizontalRuleRegex() {
-	return QRegularExpression(R"(^ *([*\-_])(?: *\1){2,} *$)");
-}
-
-QRegularExpression SectionFactory::createTitleRegex() {
-	return QRegularExpression(R"(^ {0,3}(#{1,6}) *(.*?) *$)");
-}
-
-QRegularExpression SectionFactory::createCodeBlockRegex() {
-	return QRegularExpression(R"(^ {0,3}``` *(.*?) *$)");
-}
-
-QRegularExpression SectionFactory::createOrderedListRegex(bool ignore_start_space) {
-	return QRegularExpression(QString(R"(^ %1(\d*)\. +(.*?) *$)")
-		.arg(ignore_start_space ? "*" : "{0, 3}"));
-}
-
-QRegularExpression SectionFactory::createQuoteRegex() {
-	return QRegularExpression(R"(^ {0,3}&gt; *(.*?) *$)");
-}
-
-QRegularExpression SectionFactory::createTableRegex() {
-	return QRegularExpression(R"(^ {0,3}\|.*\|.*$)");
-}
-
-QRegularExpression SectionFactory::createTableHeaderSeparatorRegex() {
-	return QRegularExpression(R"(^ {0,3}(?:\| *:?-*:? *)+ *$)");
-}
-
-QRegularExpression SectionFactory::createUnorderedListRegex(bool ignore_start_space) {
-	return QRegularExpression(QString(R"(^ %1([*+-]) +(.*?) *$)")
-		.arg(ignore_start_space ? "*" : "{0, 3}"));
-}
-
-QRegularExpression SectionFactory::createHtmlBlockRegex() {
-	return QRegularExpression(R"(^\s*<(?!\!--)(?:[a-zA-Z][\w:\-]*)(\s[^>]*)?>)",
-		QRegularExpression::CaseInsensitiveOption);
-}
-
-bool SectionFactory::isIndentedCodeBlock(const QString& line) {
-	return createIndentedCodeBlockRegex().match(line).hasMatch();
-}
-
-bool SectionFactory::isHorizontalRule(const QString& line) {
-	return createHorizontalRuleRegex().match(line).hasMatch();
-}
-
-bool SectionFactory::isTitle(const QString& line) {
-	return createTitleRegex().match(line).hasMatch();
-}
-
-bool SectionFactory::isCodeBlock(const QString& line) {
-	return createCodeBlockRegex().match(line).hasMatch();
-}
-
-bool SectionFactory::isOrderedList(const QString& line) {
-	return createOrderedListRegex(true).match(line).hasMatch();
-}
-
-bool SectionFactory::isQuote(const QString& line) {
-	return createQuoteRegex().match(line).hasMatch();
-}
-
-bool SectionFactory::isTable(const QString& line) {
-	return createTableRegex().match(line).hasMatch();
-}
-
-bool SectionFactory::isTableHeaderSeparator(const QString& line) {
-	return createTableHeaderSeparatorRegex().match(line).hasMatch();
-}
-
-bool SectionFactory::isUnorderedList(const QString& line) {
-	return createUnorderedListRegex(true).match(line).hasMatch();
-}
-
-bool SectionFactory::isHtmlBlock(const QString& line) {
-	const QString& trimmed = line.trimmed();
-	return trimmed.startsWith('<') && !trimmed.startsWith("<!--") && createHtmlBlockRegex().match(line).hasMatch();
-}
-
-bool SectionFactory::isHtmlVoidTag(const QString& tag) {
-	static const QSet<QString> voidTags = {
-		"area", "base", "br", "col", "embed", "hr", "img", "input",
-		"link", "meta", "param", "source", "track", "wbr"
-	};
-	return voidTags.contains(tag.toLower());
 }
