@@ -29,7 +29,12 @@ CMake options:
 |---------------------|-----------------------------------------------------------------------------------------------------|---------|
 | `BUILD_SHARED_LIBS` | ON: build a shared link library; OFF: build a static link library.                                  | `ON`    |
 | `BUILD_SAMPLES`     | Build samples.                                                                                      | `ON`    |
+| `BUILD_TESTS`       | Build tests.                                                                                        | `ON`    |
 | `CMAKE_PREFIX_PATH` | Path to find dependencies. Must be set to the installation directory of the Qt kit you want to use. |         |
+
+## About Tests
+
+Using `QtTest` module. Please require `find_package` added in your `CMakeLists.txt`.
 
 ## About Samples
 
