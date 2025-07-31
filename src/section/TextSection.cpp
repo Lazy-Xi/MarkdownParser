@@ -7,12 +7,16 @@
 #include <utility>
 
 TextSection& TextSection::operator=(const TextSection& other) {
-	if (this != &other) { this->lines = other.lines; }
+	if (this != &other) {
+		this->lines = other.lines;
+	}
 	return *this;
 }
 
 TextSection& TextSection::operator=(TextSection&& other) noexcept {
-	if (this != &other) { this->lines = std::move(other.lines); }
+	if (this != &other) {
+		this->lines = std::move(other.lines);
+	}
 	return *this;
 }
 
@@ -20,7 +24,9 @@ QString TextSection::toHtml() {
 	QString content("");
 	for (auto& l : this->lines) {
 		content.append(l);
-		content.append(" ");
+		if (!l.endsWith("\n")) {
+			content.append(" ");
+		}
 	}
 
 	return QString("%1%2%3")

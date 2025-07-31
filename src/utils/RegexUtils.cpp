@@ -1,5 +1,7 @@
 #include "utils/RegexUtils.h"
 
+#include <qregularexpression.h>
+
 namespace RegexUtils {
 
 const QRegularExpression& indentedCodeBlock() {
@@ -50,8 +52,8 @@ const QRegularExpression& unorderedList(bool ignore_start_space) {
 }
 
 const QRegularExpression& htmlBlock() {
-	static const QRegularExpression re(R"(^\s*<(?!\!--)(?:[a-zA-Z][\w:\-]*)(\s[^>]*)?>)",
-		QRegularExpression::CaseInsensitiveOption);
+	static const QRegularExpression re(R"(^\s*(?:<!--.*?-->|<(?!\!--)(?:[a-zA-Z][\w:\-]*)(\s[^>]*)?>))",
+		QRegularExpression::CaseInsensitiveOption | QRegularExpression::DotMatchesEverythingOption);
 	return re;
 }
 

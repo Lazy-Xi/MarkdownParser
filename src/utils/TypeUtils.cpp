@@ -3,6 +3,7 @@
 #include "utils/RegexUtils.h"
 
 #include <qset.h>
+#include <qstring.h>
 
 namespace TypeUtils {
 
@@ -44,7 +45,7 @@ bool isUnorderedList(const QString& line) {
 
 bool isHtmlBlock(const QString& line) {
     const QString& trimmed = line.trimmed();
-    return trimmed.startsWith('<') && !trimmed.startsWith("<!--") && RegexUtils::htmlBlock().match(line).hasMatch();
+    return trimmed.startsWith('<') && RegexUtils::htmlBlock().match(line).hasMatch();
 }
 
 bool isHtmlVoidTag(const QString& tag) {

@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/section-2.json",
+  "to html": [
+    {
+      "name": "simple quote",
+      "lines": [
+        "> This is a simple quote.",
+        "> This is the rest of the paragraph."
+      ],
+      "expected": "<blockquote><p>This is a simple quote. This is the rest of the paragraph.</p></blockquote>"
+    },
+    {
+      "name": "nested quotes",
+      "lines": [
+        "> This is a simple quote.",
+        {
+          "section": "QUOTE",
+          "lines": [
+            "> This is a nested quote.",
+            "> This is the rest of the nested quote."
+          ]
+        },
+        "> This is the rest of the paragraph."
+      ],
+      "expected": "<blockquote><p>This is a simple quote.</p><blockquote><p>This is a nested quote. This is the rest of the nested quote.</p></blockquote><p>This is the rest of the paragraph.</p></blockquote>"
+    }
+  ]
+}

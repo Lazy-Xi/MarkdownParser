@@ -22,8 +22,8 @@ void writeFile(const QString& path, const QString& content);
 
 int main() {
 	const QDir resource_dir(QString::fromUtf8(RESOURCE_PATH));
-	const QDir input_dir(resource_dir.filePath("tests/samples"));
-	const QDir output_dir(resource_dir.filePath("tests_output"));
+	const QDir input_dir(resource_dir.filePath("samples/samples"));
+	const QDir output_dir(resource_dir.filePath("samples_output"));
 	output_dir.mkpath(".");
 
 	QStringList filters;

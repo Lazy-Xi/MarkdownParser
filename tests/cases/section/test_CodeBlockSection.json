@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema/section-1.json",
+  "to html": [
+    {
+      "name": "multiple lines of code - 1",
+      "lines": [
+        "int a = 1;",
+        "if (a > 0) {",
+        "    a++;",
+        "}"
+      ],
+      "expected": "<pre><code>int a = 1;\nif (a &gt; 0) {\n    a++;\n}\n</code></pre>"
+    },
+    {
+      "name": "multiple lines of code - 2",
+      "lines": [
+        "int a = 1;",
+        "if (a > 0) {",
+        "    a++;",
+        "}",
+        "int b = 2;"
+      ],
+      "expected": "<pre><code>int a = 1;\nif (a &gt; 0) {\n    a++;\n}\nint b = 2;\n</code></pre>"
+    },
+    {
+      "name": "single line of code",
+      "lines": [
+        "int a = 1;"
+      ],
+      "expected": "<pre><code>int a = 1;\n</code></pre>"
+    },
+    {
+      "name": "empty code block",
+      "lines": [
+        ""
+      ],
+      "expected": "<pre><code>\n</code></pre>"
+    }
+  ],
+  "assignment": [
+    {
+      "name": "assignment",
+      "lines": [
+        "int a = 1;",
+        "a++;"
+      ],
+      "expected": "<pre><code>int a = 1;\na++;\n</code></pre>"
+    }
+  ],
+  "move assignment": [
+    {
+      "name": "move assignment",
+      "lines": [
+        "int a = 1;",
+        "a++;"
+      ],
+      "expected": "<pre><code>int a = 1;\na++;\n</code></pre>"
+    }
+  ]
+}

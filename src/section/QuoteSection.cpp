@@ -6,6 +6,7 @@
 
 #include <qregularexpression.h>
 #include <qstring.h>
+#include <qtypes.h>
 
 #include <utility>
 #include <variant>
@@ -23,10 +24,10 @@ QuoteSection& QuoteSection::operator=(QuoteSection&& other) noexcept {
 QString QuoteSection::toHtml() {
 	QString content("");
 	bool need_add_p_tag = true;
-	for (auto& i : lines) {
-		if (std::holds_alternative<QString>(i)) {
-			QRegularExpressionMatch match = RegexUtils::quote().match(std::get<QString>(i));
-			const QString& text = match.captured(1);
+	for (qsizetype i = 0; i < lines.size(); ++i) {
+		if (std::holds_alternative<QString>(lines[i])) {
+			QRegularExpressionMatch match = RegexUtils::quote().match(std::get<QString>(lines[i]));
+			const QString& text = match.hasMatch() ? match.captured(1) : std::get<QString>(lines[i]).trimmed();
 
 			if (text.isEmpty()) {
 				if (!need_add_p_tag) {
@@ -40,17 +41,20 @@ QString QuoteSection::toHtml() {
 					need_add_p_tag = false;
 				}
 				content.append(InlineParser(text).toHtml());
-				content.append(" ");
+				if (i + 1 < lines.size() && std::holds_alternative<QString>(lines[i + 1])) {
+					content.append(" ");
+				}
 			}
 		}
-		else if (std::holds_alternative<AbstractSection*>(i)) {
+		else if (std::holds_alternative<AbstractSection*>(lines[i])) {
 			if (!need_add_p_tag) {
 				content.append("</p>");
 				need_add_p_tag = true;
 			}
-			content.append(std::get<AbstractSection*>(i)->toHtml());
+			content.append(std::get<AbstractSection*>(lines[i])->toHtml());
 		}
 	}
+	content.append("</p>");
 
 	return QString("%1%2%3")
 		.arg(this->before())

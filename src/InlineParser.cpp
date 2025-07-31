@@ -92,12 +92,13 @@ void InlineParser::handleNormal(qsizetype& i, const QChar& ch) {
 	};
 	static const Pattern append_patterns[] = {
 		{ "***", SectionType::BOLD_ITALIC },
-		{ "~~", SectionType::STRIKETHROUGH },
-		{ "==", SectionType::HIGHLIGHT },
+		{ "___", SectionType::BOLD_ITALIC },
 		{ "**", SectionType::BOLD },
 		{ "__", SectionType::BOLD },
 		{ "*", SectionType::ITALIC },
 		{ "_", SectionType::ITALIC },
+		{ "~~", SectionType::STRIKETHROUGH },
+		{ "==", SectionType::HIGHLIGHT },
 		{ "`", SectionType::INLINE_CODE },
 	};
 	static const Pattern buffer_patterns[] = {
@@ -156,7 +157,7 @@ void InlineParser::handleItalic(qsizetype& i, const QChar& ch) {
 }
 
 void InlineParser::handleBoldItalic(qsizetype& i, const QChar& ch) {
-	if (line.mid(i, 3) == "***") {
+	if (line.mid(i, 3) == "***" || line.mid(i, 3) == "___") {
 		state.target->append(close_tags[SectionType::BOLD_ITALIC]);
 		popState();
 		i += 2;
@@ -229,7 +230,7 @@ void InlineParser::handleImageAlt(qsizetype& i, const QChar& ch) {
 void InlineParser::handleImageUrl(qsizetype& i, const QChar& ch) {
 	if (ch == ')') {
 		temp_url = buffer;
-		html.append(QString(R"(<img src="%1" alt="%2">)").arg(temp_url).arg(temp_text));
+		html.append(QString(R"(<img src="%1" alt="%2" />)").arg(temp_url).arg(temp_text));
 		popState();
 	}
 	else { state.target->append(ch); }

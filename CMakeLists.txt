@@ -16,13 +16,14 @@ qt_standard_project_setup()
 
 option(BUILD_SHARED_LIBS "Build shared library" ON)
 option(BUILD_SAMPLES "Build samples" ON)
+option(BUILD_TESTS "Build tests" ON)
 
-set(DEFAULT_CSS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/default.css)
-set(DEFAULT_CSS_HEADER ${CMAKE_CURRENT_BINARY_DIR}/default_style_sheet.h)
+set(DEFAULT_CSS_PATH ${CMAKE_SOURCE_DIR}/default.css)
+set(DEFAULT_CSS_HEADER ${CMAKE_BINARY_DIR}/default_style_sheet.h)
 
 add_custom_target(generate_style_sheet ALL
     COMMAND ${CMAKE_COMMAND} -DINPUT="${DEFAULT_CSS_PATH}" -DOUTPUT"=${DEFAULT_CSS_HEADER}"
-        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_style_sheet.cmake"
+        -P "${CMAKE_SOURCE_DIR}/cmake/generate_style_sheet.cmake"
     COMMENT "Generating default_style_sheet.h"
 )
 
@@ -54,6 +55,7 @@ set(SOURCES
     "src/SectionFactory.cpp"
     "src/SectionList.cpp"
     "src/SectionParser.cpp"
+    "src/SectionType.cpp"
     "src/section/AbstractSection.cpp"
     "src/section/CodeBlockSection.cpp"
     "src/section/HorizontalRuleSection.cpp"
@@ -69,43 +71,35 @@ set(SOURCES
 )
 
 if(BUILD_SHARED_LIBS)
-    qt_add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+    qt_add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
     target_compile_definitions(${PROJECT_NAME} PRIVATE MARKDOWNTOHTML_EXPORTS)
 else()
-    qt_add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
+    qt_add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
 endif()
 
 add_dependencies(${PROJECT_NAME} generate_style_sheet)
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} 
+    PRIVATE 
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_BINARY_DIR}
+)
 target_link_libraries(${PROJECT_NAME} PUBLIC Qt${QT_VERSION_MAJOR}::Core)
 
 include(GNUInstallDirs)
+
 install(TARGETS ${PROJECT_NAME}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if(BUILD_SAMPLES)
-    set(RESOURCE_PATH ${CMAKE_SOURCE_DIR})
-    configure_file(samples/config.h.in config.h)
+    add_subdirectory(samples)
+endif()
 
-    qt_add_executable(${PROJECT_NAME}_sample "samples/main.cpp")
-    target_include_directories(${PROJECT_NAME}_sample PRIVATE ${CMAKE_BINARY_DIR})
-    target_link_libraries(${PROJECT_NAME}_sample PUBLIC ${PROJECT_NAME})
-    
-    add_custom_target(run_sample ALL
-        COMMAND ${CMAKE_COMMAND} -E remove_directory 
-            ${CMAKE_SOURCE_DIR}/samples_output
-        COMMAND ${CMAKE_COMMAND} -E env
-            "PATH=${CMAKE_PREFIX_PATH}/bin;$ENV{PATH}"
-            ${PROJECT_NAME}_sample
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Running conversion tests..."
-    )
-    add_dependencies(run_sample ${PROJECT_NAME}_sample)
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+    enable_testing()
 endif()

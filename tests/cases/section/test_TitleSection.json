@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/section-1.json",
+  "to html": [
+    {
+      "name": "title - level 1",
+      "lines": [
+        "# Title 1"
+      ],
+      "expected": "<h1 id=\"title-1\">Title 1</h1>"
+    },
+    {
+      "name": "title - level 2",
+      "lines": [
+        "## Title 2"
+      ],
+      "expected": "<h2 id=\"title-2\">Title 2</h2>"
+    },
+    {
+      "name": "title - level 3",
+      "lines": [
+        "### Title 3"
+      ],
+      "expected": "<h3 id=\"title-3\">Title 3</h3>"
+    },
+    {
+      "name": "title - level 4",
+      "lines": [
+        "#### Title 4"
+      ],
+      "expected": "<h4 id=\"title-4\">Title 4</h4>"
+    },
+    {
+      "name": "title - level 5",
+      "lines": [
+        "##### Title 5"
+      ],
+      "expected": "<h5 id=\"title-5\">Title 5</h5>"
+    },
+    {
+      "name": "title - level 6",
+      "lines": [
+        "###### Title 6"
+      ],
+      "expected": "<h6 id=\"title-6\">Title 6</h6>"
+    },
+    {
+      "name": "title with inline style",
+      "lines": [
+        "# Title 1 *italic* **bold** `code`"
+      ],
+      "expected": "<h1 id=\"title-1-*italic*-**bold**-`code`\">Title 1 <em>italic</em> <strong>bold</strong> <code>code</code></h1>"
+    }
+  ]
+}

@@ -10,12 +10,16 @@
 #include <variant>
 
 OrderedListSection& OrderedListSection::operator=(const OrderedListSection& other) {
-	if (this != &other) { this->lines = other.lines; }
+	if (this != &other) {
+		this->lines = other.lines;
+	}
 	return *this;
 }
 
 OrderedListSection& OrderedListSection::operator=(OrderedListSection&& other) noexcept {
-	if (this != &other) { this->lines = std::move(other.lines); }
+	if (this != &other) {
+		this->lines = std::move(other.lines);
+	}
 	return *this;
 }
 
@@ -24,7 +28,9 @@ QString OrderedListSection::toHtml() {
 	bool flag = false;
 	for (auto& i : lines) {
 		if (std::holds_alternative<QString>(i)) {
-			if (flag) { content.append("</li>"); }
+			if (flag) {
+				content.append("</li>");
+			}
 			const QString& text = RegexUtils::orderedList(true).match(std::get<QString>(i)).captured(2);
 			content.append(QString("<li>%1").arg(InlineParser(text).toHtml()));
 		}
@@ -33,6 +39,7 @@ QString OrderedListSection::toHtml() {
 		}
 		flag = true;
 	}
+	content.append("</li>");
 
 	return QString("%1%2%3")
 		.arg(this->before())

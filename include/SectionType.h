@@ -2,6 +2,8 @@
 
 #include "export.h"
 
+#include <qstring.h>
+
 enum class MARKDOWNPARSER_API SectionType {
 	EMPTY,
 	UNKNOWN,
@@ -31,3 +33,5 @@ enum class MARKDOWNPARSER_API SectionType {
 	NORMAL,
 	STRIKETHROUGH
 };
+
+SectionType MARKDOWNPARSER_API sectionTypeReflect(const QString& type);

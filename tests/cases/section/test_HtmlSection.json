@@ -1,0 +1,64 @@
+{
+  "$schema": "../schema/section-1.json",
+  "to html": [
+    {
+      "name": "simple html",
+      "lines": [
+        "<h1>This is a heading</h1>",
+        "<div>",
+        "This is some text.",
+        "</div>",
+        "<ul>",
+        "<li>Item 1</li>",
+        "<li>Item 2</li>",
+        "<li>Item 3</li>",
+        "</ul>"
+      ],
+      "expected": "<div><h1>This is a heading</h1><div>This is some text.</div><ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul></div>"
+    },
+    {
+      "name": "html with attributes",
+      "lines": [
+        "<img src=\"image.jpg\" alt=\"Image description\">",
+        "<a href=\"https://www.example.com\">Link text</a>",
+        "<div class=\"my-class\">This is some text.</div>",
+        "<span style=\"color: red;\">This is some text.</span>",
+        "<p id=\"content\">This is some text.</p>"
+      ],
+      "expected": "<div><img src=\"image.jpg\" alt=\"Image description\"><a href=\"https://www.example.com\">Link text</a><div class=\"my-class\">This is some text.</div><span style=\"color: red;\">This is some text.</span><p id=\"content\">This is some text.</p></div>"
+    },
+    {
+      "name": "html with comments",
+      "lines": [
+        "<!-- This is a comment -->",
+        "<h1>This is a heading</h1>",
+        "<!-- This is another comment -->",
+        "<div>",
+        "This is some text.",
+        "</div>",
+        "<!-- This is a third comment -->",
+        "<ul>",
+        "<li>Item 1</li>",
+        "<li>Item 2</li>",
+        "<li>Item 3</li>",
+        "</ul>"
+      ],
+      "expected": "<div><!-- This is a comment --><h1>This is a heading</h1><!-- This is another comment --><div>This is some text.</div><!-- This is a third comment --><ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul></div>"
+    },
+    {
+      "name": "html with long content",
+      "lines": [
+        "<div id=\"longContent\">",
+        "    <h1>Welcome to Fitten Code's Example Page</h1>",
+        "    <p>Today is a beautiful day, and we will demonstrate an HTML",
+        "tag with a lot of content. The purpose of this tag is to show how to ",
+        "correctly use and display a large amount of content in a webpage.</p>",
+        "    <p>A long text content is very helpful for practicing web design and JavaScript DOM manipulation. It helps us understand how browsers render large amounts of content and how to manipulate this content using JavaScript.</p>",
+        "    <p>In this example, we will use JavaScript to create and update the content of this div. You can see that even with a lot of content, the page will display it correctly. We will also add some other HTML elements, such as lists and links, to enrich this example.</p>",
+        "    <p>We hope this example is helpful to you. If you have any questions, feel free to ask.</p>",
+        "</div>"
+      ],
+      "expected": "<div><div id=\"longContent\"><h1>Welcome to Fitten Code's Example Page</h1><p>Today is a beautiful day, and we will demonstrate an HTML tag with a lot of content. The purpose of this tag is to show how to correctly use and display a large amount of content in a webpage.</p><p>A long text content is very helpful for practicing web design and JavaScript DOM manipulation. It helps us understand how browsers render large amounts of content and how to manipulate this content using JavaScript.</p><p>In this example, we will use JavaScript to create and update the content of this div. You can see that even with a lot of content, the page will display it correctly. We will also add some other HTML elements, such as lists and links, to enrich this example.</p><p>We hope this example is helpful to you. If you have any questions, feel free to ask.</p></div></div>"
+    }
+  ]
+}

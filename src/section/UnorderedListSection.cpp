@@ -10,12 +10,16 @@
 #include <variant>
 
 UnorderedListSection& UnorderedListSection::operator=(const UnorderedListSection& other) {
-	if (this != &other) { this->lines = other.lines; }
+	if (this != &other) {
+		this->lines = other.lines;
+	}
 	return *this;
 }
 
 UnorderedListSection& UnorderedListSection::operator=(UnorderedListSection&& other) noexcept {
-	if (this != &other) { this->lines = std::move(other.lines); }
+	if (this != &other) {
+		this->lines = std::move(other.lines);
+	}
 	return *this;
 }
 
@@ -24,7 +28,9 @@ QString UnorderedListSection::toHtml() {
 	bool flag = false;
 	for (auto& i : this->lines) {
 		if (std::holds_alternative<QString>(i)) {
-			if (flag) { content.append("</li>"); }
+			if (flag) {
+				content.append("</li>");
+			}
 			const QString& text = RegexUtils::unorderedList(true).match(std::get<QString>(i)).captured(2);
 			content.append(QString("<li>%1").arg(InlineParser(text).toHtml()));
 		}
@@ -33,6 +39,7 @@ QString UnorderedListSection::toHtml() {
 		}
 		flag = true;
 	}
+	content.append("</li>");
 
 	return QString("%1%2%3")
 		.arg(this->before())

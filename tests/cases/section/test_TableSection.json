@@ -1,0 +1,33 @@
+{
+  "$schema": "../schema/section-1.json",
+  "to html": [
+    {
+      "name": "simple table",
+      "lines": [
+        "| Header 1 | Header 2 | Header 3 |",
+        "|----------|----------|----------|",
+        "| Cell 1   | Cell 2   | Cell 3   |",
+        "| Cell 4   | Cell 5   | Cell 6   |"
+      ],
+      "expected": "<table><thead><tr><th align=\"left\">Header 1</th><th align=\"left\">Header 2</th><th align=\"left\">Header 3</th></tr></thead><tbody><tr><td align=\"left\">Cell 1</td><td align=\"left\">Cell 2</td><td align=\"left\">Cell 3</td></tr><tr><td align=\"left\">Cell 4</td><td align=\"left\">Cell 5</td><td align=\"left\">Cell 6</td></tr></tbody></table>"
+    },
+    {
+      "name": "table only with header",
+      "lines": [
+        "| Header 1 | Header 2 | Header 3 |",
+        "|----------|----------|----------|"
+      ],
+      "expected": "<table><thead><tr><th align=\"left\">Header 1</th><th align=\"left\">Header 2</th><th align=\"left\">Header 3</th></tr></thead><tbody></tbody></table>"
+    },
+    {
+      "name": "table with alignment",
+      "lines": [
+        "| Header 1 | Header 2 | Header 3 |",
+        "|:---------|:--------:|---------:|",
+        "| Cell 1   | Cell 2   | Cell 3   |",
+        "| Cell 4   | Cell 5   | Cell 6   |"
+      ],
+      "expected": "<table><thead><tr><th align=\"left\">Header 1</th><th align=\"center\">Header 2</th><th align=\"right\">Header 3</th></tr></thead><tbody><tr><td align=\"left\">Cell 1</td><td align=\"center\">Cell 2</td><td align=\"right\">Cell 3</td></tr><tr><td align=\"left\">Cell 4</td><td align=\"center\">Cell 5</td><td align=\"right\">Cell 6</td></tr></tbody></table>"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "to html": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/linesItem"
+            }
+          },
+          "expected": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "to html"
+  ],
+  "$defs": {
+    "linesItem": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "section": {
+              "type": "string",
+              "enum": [
+                "CODE_BLOCK",
+                "HORIZONTAL_RULE",
+                "HTML",
+                "ORDERED_LIST",
+                "QUOTE",
+                "TABLE",
+                "TEXT",
+                "UNORDERED_LIST"
+              ]
+            },
+            "lines": {
+              "type": "array",
+              "items": {
+                "allOf": [
+                  {
+                    "if": {
+                      "section": {
+                        "enum": [
+                          "ORDERED_LIST",
+                          "QUOTE",
+                          "UNORDERED_LIST"
+                        ]
+                      }
+                    },
+                    "then": {
+                      "$ref": "#/$defs/linesItem"
+                    },
+                    "else": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

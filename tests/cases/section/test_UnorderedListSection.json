@@ -1,0 +1,74 @@
+{
+  "$schema": "../schema/section-2.json",
+  "to html": [
+    {
+      "name": "list without nested",
+      "lines": [
+        "- Item 1",
+        "- Item 2",
+        "- Item 3"
+      ],
+      "expected": "<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>"
+    },
+    {
+      "name": "list with nested list",
+      "lines": [
+        "- Item 1",
+        "- Item 2",
+        {
+          "section": "ORDERED_LIST",
+          "lines": [
+            "1. Nested item 1",
+            "2. Nested item 2",
+            "3. Nested item 3"
+          ]
+        },
+        "- Item 3",
+        {
+          "section": "UNORDERED_LIST",
+          "lines": [
+            "- Nested item 1",
+            "- Nested item 2",
+            {
+              "section": "ORDERED_LIST",
+              "lines": [
+                "1. Double nested item 1",
+                "2. Double nested item 2",
+                "3. Double nested item 3"
+              ]
+            },
+            "- Nested item 3"
+          ]
+        },
+        "- Item 4"
+      ],
+      "expected": "<ul><li>Item 1</li><li>Item 2<ol><li>Nested item 1</li><li>Nested item 2</li><li>Nested item 3</li></ol></li><li>Item 3<ul><li>Nested item 1</li><li>Nested item 2<ol><li>Double nested item 1</li><li>Double nested item 2</li><li>Double nested item 3</li></ol></li><li>Nested item 3</li></ul></li><li>Item 4</li></ul>"
+    },
+    {
+      "name": "list with multiple nested content",
+      "lines": [
+        "- Item 1",
+        "- Item 2",
+        {
+          "section": "TEXT",
+          "lines": [
+            "Some text here.",
+            "Some more text here.",
+            "And some more text here."
+          ]
+        },
+        "-  Item 3",
+        {
+          "section": "CODE_BLOCK",
+          "lines": [
+            "int main() {",
+            "    return 0;",
+            "}"
+          ]
+        },
+        "- Item 4"
+      ],
+      "expected": "<ul><li>Item 1</li><li>Item 2<p>Some text here. Some more text here. And some more text here.</p></li><li>Item 3<pre><code>int main() {\n    return 0;\n}\n</code></pre></li><li>Item 4</li></ul>"
+    }
+  ]
+}

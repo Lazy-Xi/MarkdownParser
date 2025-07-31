@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/section-1.json",
+  "to html": [
+    {
+      "name": "single line text",
+      "lines": [
+        "This is a single line text."
+      ],
+      "expected": "<p>This is a single line text.</p>"
+    },
+    {
+      "name": "multiple line text",
+      "lines": [
+        "This is the first line.",
+        "This is the second line.",
+        "This is the third line."
+      ],
+      "expected": "<p>This is the first line. This is the second line. This is the third line.</p>"
+    },
+    {
+      "name": "text with inline styles",
+      "lines": [
+        "This is a *italic* example.\n",
+        "This is a _italic_ example.\n",
+        "This is a **bold** example.\n",
+        "This is a __bold__ example.\n",
+        "This is a ***bold italic*** example.\n",
+        "This is a ___bold italic___ example.\n",
+        "This is a `inline code` example.\n",
+        "This is a ~~strikethrough~~ example.\n",
+        "This is a ==highlighted== example."
+      ],
+      "expected": "<p>This is a <em>italic</em> example.\nThis is a <em>italic</em> example.\nThis is a <strong>bold</strong> example.\nThis is a <strong>bold</strong> example.\nThis is a <strong><em>bold italic</em></strong> example.\nThis is a <strong><em>bold italic</em></strong> example.\nThis is a <code>inline code</code> example.\nThis is a <del>strikethrough</del> example.\nThis is a <mark>highlighted</mark> example.</p>"
+    },
+    {
+      "name": "text with links and images",
+      "lines": [
+        "This is a [link](https://www.google.com).\n",
+        "![image](https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png)"
+      ],
+      "expected": "<p>This is a <a href=\"https://www.google.com\">link</a>.\n<img src=\"https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png\" alt=\"image\" /></p>"
+    },
+    {
+      "name": "text with nested inline styles",
+      "lines": [
+        "This is a **bold *italic* text** example.\n",
+        "This is a ~~strikethrough **bold**~~ example.\n",
+        "This is a ==highlighted *italic* text== example.\n",
+        "This is a [link with **bold** text](https://www.google.com)."
+      ],
+      "expected": "<p>This is a <strong>bold <em>italic</em> text</strong> example.\nThis is a <del>strikethrough <strong>bold</strong></del> example.\nThis is a <mark>highlighted <em>italic</em> text</mark> example.\nThis is a <a href=\"https://www.google.com\">link with <strong>bold</strong> text</a>.</p>"
+    }
+  ]
+}

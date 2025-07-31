@@ -15,7 +15,7 @@ HorizontalRuleSection& HorizontalRuleSection::operator=(HorizontalRuleSection&& 
 }
 
 QString HorizontalRuleSection::toHtml() {
-	return QString("%1<hr>%2")
+	return QString("%1<hr />%2")
 		.arg(this->before())
 		.arg(this->after());
 }

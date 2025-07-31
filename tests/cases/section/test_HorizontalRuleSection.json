@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/section-1.json",
+  "to html": [
+    {
+      "name": "simple horizontal rule - 1",
+      "lines": [
+        "---"
+      ],
+      "expected": "<hr />"
+    },
+    {
+      "name": "simple horizontal rule - 2",
+      "lines": [
+        "***"
+      ],
+      "expected": "<hr />"
+    },
+    {
+      "name": "simple horizontal rule - 3",
+      "lines": [
+        "___"
+      ],
+      "expected": "<hr />"
+    },
+    {
+      "name": "complex horizontal rule - 1",
+      "lines": [
+        "   -- -    -- -    -"
+      ],
+      "expected": "<hr />"
+    },
+    {
+      "name": "complex horizontal rule - 2",
+      "lines": [
+        "*  ** *    * *     * *"
+      ],
+      "expected": "<hr />"
+    },
+    {
+      "name": "complex horizontal rule - 3",
+      "lines": [
+        "  ___  ___ _    _ _    "
+      ],
+      "expected": "<hr />"
+    }
+  ]
+}
