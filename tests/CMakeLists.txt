@@ -5,11 +5,13 @@ configure_file(config.h.in config.h)
 
 set(TESTS_HEADERS
     "include/test_Section.h"
+    "include/test_HtmlRenderer.h"
 )
 
 set(TESTS_SOURCES
     main.cpp
     "src/test_Section.cpp"
+    "src/test_HtmlRenderer.cpp"
 )
 
 qt_add_executable(${PROJECT_NAME}_tests ${TESTS_HEADERS} ${TESTS_SOURCES})

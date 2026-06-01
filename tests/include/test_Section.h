@@ -4,6 +4,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
+#include <qstringlist.h>
 #include <qtmetamacros.h>
 
 class test_Section {
@@ -18,14 +19,11 @@ protected:
 
 class test_Section1 : public QObject, public test_Section {
     Q_OBJECT
-
 public:
     test_Section1(const QString &data_path, const SectionType &type)
         : test_Section(data_path, type) {}
-
 private:
     void loadTestData(const QString &path, const QString &item);
-
 private slots:
     void testToHtml_data();
     void testToHtml();
@@ -33,14 +31,11 @@ private slots:
 
 class test_Section2 : public QObject, public test_Section {
     Q_OBJECT
-
 public:
     test_Section2(const QString &data_path, const SectionType &type)
         : test_Section(data_path, type) {}
-
 private:
     void loadTestData(const QString &path, const QString &item);
-
 private slots:
     void testToHtml_data();
     void testToHtml();

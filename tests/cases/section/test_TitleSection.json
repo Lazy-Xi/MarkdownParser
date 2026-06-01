@@ -48,7 +48,7 @@
       "lines": [
         "# Title 1 *italic* **bold** `code`"
       ],
-      "expected": "<h1 id=\"title-1-*italic*-**bold**-`code`\">Title 1 <em>italic</em> <strong>bold</strong> <code>code</code></h1>"
+      "expected": "<h1 id=\"title-1-italic-bold-code\">Title 1 <em>italic</em> <strong>bold</strong> <code>code</code></h1>"
     }
   ]
 }

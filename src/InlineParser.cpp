@@ -1,260 +1,270 @@
 #include "InlineParser.h"
 
-#include "SectionType.h"
+#include "node/BlockNodes.h"
+#include "node/InlineNodes.h"
+#include "render/HtmlRenderer.h"
 
 #include <qchar.h>
-#include <qmap.h>
 #include <qstring.h>
 #include <qtypes.h>
 
-#include <functional>
+#include <utility>
 
-const QMap<SectionType, QString> InlineParser::open_tags = {
-    {SectionType::BOLD, "<strong>"}, {SectionType::ITALIC, "<em>"},
-    {SectionType::BOLD_ITALIC, "<strong><em>"},
-    {SectionType::STRIKETHROUGH, "<del>"}, {SectionType::HIGHLIGHT, "<mark>"},
-    {SectionType::INLINE_CODE, "<code>"}};
+// ── helpers ──────────────────────────────────────────────────────────────────
 
-const QMap<SectionType, QString> InlineParser::close_tags = {
-    {SectionType::BOLD, "</strong>"}, {SectionType::ITALIC, "</em>"},
-    {SectionType::BOLD_ITALIC, "</em></strong>"},
-    {SectionType::STRIKETHROUGH, "</del>"}, {SectionType::HIGHLIGHT, "</mark>"},
-    {SectionType::INLINE_CODE, "</code>"}};
+void InlineParser::flushText() {
+    if (!pending_text.isEmpty()) {
+        if (raw_text)
+            state.target->push_back(std::make_unique<RawTextNode>(pending_text));
+        else
+            state.target->push_back(std::make_unique<TextNode>(pending_text));
+        pending_text.clear();
+    }
+}
 
-const QMap<SectionType,
-    std::function<void(InlineParser *, qsizetype &, const QChar &)>>
-    InlineParser::state_handlers = {
-        {SectionType::NORMAL, &InlineParser::handleNormal},
-        {SectionType::INLINE_CODE, &InlineParser::handleInlineCode},
-        {SectionType::BOLD, &InlineParser::handleBold},
-        {SectionType::ITALIC, &InlineParser::handleItalic},
-        {SectionType::BOLD_ITALIC, &InlineParser::handleBoldItalic},
-        {SectionType::STRIKETHROUGH, &InlineParser::handleStrikethrough},
-        {SectionType::HIGHLIGHT, &InlineParser::handleHighlight},
-        {SectionType::LINK_TEXT, &InlineParser::handleLinkText},
-        {SectionType::LINK_URL, &InlineParser::handleLinkUrl},
-        {SectionType::IMAGE_ALT, &InlineParser::handleImageAlt},
-        {SectionType::IMAGE_URL, &InlineParser::handleImageUrl}};
-
-void InlineParser::pushState(SectionType new_state, QString *target) {
+// Append a span node to the current target, push the current frame, and make
+// the new node's child list the active target.
+void InlineParser::pushSpan(SectionType type, std::unique_ptr<Node> node) {
+    flushText();
+    Node *raw = node.get();
+    state.target->push_back(std::move(node));
     state_stack.push(state);
-    state = {new_state, target};
+    state = {type, &raw->children()};
 }
 
 void InlineParser::popState() {
+    flushText();
     if (!state_stack.isEmpty()) {
         state = state_stack.pop();
-    }
-    else {
-        state = {SectionType::NORMAL, &html};
+    } else {
+        state = {SectionType::NORMAL, &root};
     }
 }
 
-QString InlineParser::toHtml() {
-    html.clear();
+// ── public API ───────────────────────────────────────────────────────────────
+
+InlineParser::NodeList InlineParser::parse() {
+    root.clear();
+    captured.clear();
+    pending_text.clear();
     buffer.clear();
     temp_text.clear();
     temp_url.clear();
-    state = {SectionType::NORMAL, &html};
+    state = {SectionType::NORMAL, &root};
     state_stack.clear();
 
     for (qsizetype i = 0; i < line.length(); ++i) {
         handleChar(i, line[i]);
     }
-    // Auto-close any still-open inline spans, innermost first. `state` holds
-    // the innermost open span (the stack holds its enclosing parents), so it
-    // must be closed before walking the stack outward. Closing only the stack
-    // would drop the innermost tag and leave an unbalanced span in the output.
+    // Auto-close any still-open spans, innermost first. Because each span node
+    // was appended to its parent at open time, unclosed spans already sit in
+    // the tree with their accumulated children — just flush pending text.
     while (true) {
-        if (close_tags.contains(state.type)) {
-            html.append(close_tags[state.type]);
-        }
-        if (state_stack.isEmpty()) {
-            break;
-        }
+        flushText();
+        if (state_stack.isEmpty()) break;
         state = state_stack.pop();
     }
-    return html;
+    return std::move(root);
 }
+
+QString InlineParser::toHtml() {
+    return HtmlRenderer().renderInlines(parse());
+}
+
+// ── character dispatch ────────────────────────────────────────────────────────
 
 void InlineParser::handleChar(qsizetype &i, const QChar &ch) {
     if (state.type == SectionType::ESCAPE) {
-        state.target->append(ch);
+        // Escaped char is a literal — emit as RawText (no double-escape).
+        state.target->push_back(std::make_unique<RawTextNode>(QString(ch)));
         popState();
-    }
-    else if (state_handlers.contains(state.type)) {
-        state_handlers[state.type](this, i, ch);
-    }
-    else {
-        state.target->append(ch);
+    } else if (state.type == SectionType::NORMAL)      { handleNormal(i, ch);
+    } else if (state.type == SectionType::INLINE_CODE) { handleInlineCode(i, ch);
+    } else if (state.type == SectionType::BOLD)        { handleBold(i, ch);
+    } else if (state.type == SectionType::ITALIC)      { handleItalic(i, ch);
+    } else if (state.type == SectionType::BOLD_ITALIC) { handleBoldItalic(i, ch);
+    } else if (state.type == SectionType::STRIKETHROUGH){ handleStrikethrough(i, ch);
+    } else if (state.type == SectionType::HIGHLIGHT)   { handleHighlight(i, ch);
+    } else if (state.type == SectionType::LINK_TEXT)   { handleLinkText(i, ch);
+    } else if (state.type == SectionType::LINK_URL)    { handleLinkUrl(i, ch);
+    } else if (state.type == SectionType::IMAGE_ALT)   { handleImageAlt(i, ch);
+    } else if (state.type == SectionType::IMAGE_URL)   { handleImageUrl(i, ch);
+    } else {
+        pending_text += ch;
     }
 }
+
+// ── NORMAL ────────────────────────────────────────────────────────────────────
 
 void InlineParser::handleNormal(qsizetype &i, const QChar &ch) {
     if (ch == '\\') {
-        pushState(SectionType::ESCAPE, state.target);
+        flushText();
+        state_stack.push(state);
+        state = {SectionType::ESCAPE, state.target};
         return;
     }
 
-    struct Pattern {
-        QString marker;
-        SectionType type;
+    struct Pattern { QString marker; SectionType type; SpanKind kind; };
+    static const Pattern span_patterns[] = {
+        {"***", SectionType::BOLD_ITALIC,   SpanKind::StrongEmphasis},
+        {"___", SectionType::BOLD_ITALIC,   SpanKind::StrongEmphasis},
+        {"**",  SectionType::BOLD,          SpanKind::Strong},
+        {"__",  SectionType::BOLD,          SpanKind::Strong},
+        {"*",   SectionType::ITALIC,        SpanKind::Emphasis},
+        {"_",   SectionType::ITALIC,        SpanKind::Emphasis},
+        {"~~",  SectionType::STRIKETHROUGH, SpanKind::Strikethrough},
+        {"==",  SectionType::HIGHLIGHT,     SpanKind::Highlight},
     };
-    static const Pattern append_patterns[] = {
-        {"***", SectionType::BOLD_ITALIC},
-        {"___", SectionType::BOLD_ITALIC},
-        {"**", SectionType::BOLD},
-        {"__", SectionType::BOLD},
-        {"*", SectionType::ITALIC},
-        {"_", SectionType::ITALIC},
-        {"~~", SectionType::STRIKETHROUGH},
-        {"==", SectionType::HIGHLIGHT},
-        {"`", SectionType::INLINE_CODE},
-    };
-    static const Pattern buffer_patterns[] = {
-        {"![", SectionType::IMAGE_ALT}, {"[", SectionType::LINK_TEXT}};
 
-    for (const auto &p : append_patterns) {
-        if (line.mid(i, p.marker.length()) == p.marker) {
-            // For underscore markers, reject word-interior positions:
-            // a '_' flanked by alphanumerics on BOTH sides (e.g. snake_case)
-            // is literal, not an emphasis delimiter.
-            if (p.marker[0] == '_') {
-                const bool left_alnum  = i > 0 && line[i - 1].isLetterOrNumber();
-                const qsizetype after  = i + p.marker.length();
-                const bool right_alnum = after < line.length() && line[after].isLetterOrNumber();
-                if (left_alnum && right_alnum) {
-                    state.target->append(ch);
-                    return;
-                }
-            }
-            if (!state_stack.isEmpty() && state.type == p.type) {
-                state.target->append(close_tags[p.type]);
-                popState();
-            }
-            else {
-                state.target->append(open_tags[p.type]);
-                pushState(p.type, state.target);
-            }
-            i += p.marker.length() - 1;
-            return;
+    for (const auto &p : span_patterns) {
+        if (line.mid(i, p.marker.length()) != p.marker) continue;
+        if (p.marker[0] == '_') {
+            const bool left  = i > 0 && line[i - 1].isLetterOrNumber();
+            const qsizetype after = i + p.marker.length();
+            const bool right = after < line.length() && line[after].isLetterOrNumber();
+            if (left && right) { pending_text += ch; return; }
         }
-    }
-    for (const auto &p : buffer_patterns) {
-        if (line.mid(i, p.marker.length()) == p.marker) {
-            buffer.clear();
-            pushState(p.type, &buffer);
-            i += p.marker.length() - 1;
-            return;
+        if (!state_stack.isEmpty() && state.type == p.type) {
+            popState(); // close
+        } else {
+            pushSpan(p.type, std::make_unique<EmphasisNode>(p.kind));
         }
+        i += p.marker.length() - 1;
+        return;
     }
-    state.target->append(ch);
-}
 
-void InlineParser::handleInlineCode(qsizetype &i, const QChar &ch) {
     if (ch == '`') {
-        state.target->append(close_tags[SectionType::INLINE_CODE]);
-        popState();
+        flushText();
+        buffer.clear();
+        state_stack.push(state);
+        state = {SectionType::INLINE_CODE, state.target};
+        return;
     }
-    else {
-        state.target->append(ch);
+
+    if (line.mid(i, 2) == "![") {
+        flushText();
+        buffer.clear();
+        state_stack.push(state);
+        state = {SectionType::IMAGE_ALT, state.target};
+        ++i;
+        return;
     }
+    if (ch == '[') {
+        flushText();
+        // Parse link text into `captured` (inline-parsed).
+        captured.clear();
+        state_stack.push(state);
+        state = {SectionType::LINK_TEXT, &captured};
+        return;
+    }
+
+    pending_text += ch;
 }
+
+// ── span close handlers ───────────────────────────────────────────────────────
 
 void InlineParser::handleBold(qsizetype &i, const QChar &ch) {
-    if (line.mid(i, 2) == "**" || line.mid(i, 2) == "__") {
-        state.target->append(close_tags[SectionType::BOLD]);
-        popState();
-        ++i;
-    }
-    else {
-        handleNormal(i, ch);
-    }
+    if (line.mid(i, 2) == "**" || line.mid(i, 2) == "__") { popState(); ++i; }
+    else { handleNormal(i, ch); }
 }
 
 void InlineParser::handleItalic(qsizetype &i, const QChar &ch) {
-    if (line.mid(i, 1) == "*" || line.mid(i, 1) == "_") {
-        state.target->append(close_tags[SectionType::ITALIC]);
-        popState();
-    }
-    else {
-        handleNormal(i, ch);
-    }
+    if (ch == '*' || ch == '_') { popState(); }
+    else { handleNormal(i, ch); }
 }
 
 void InlineParser::handleBoldItalic(qsizetype &i, const QChar &ch) {
-    if (line.mid(i, 3) == "***" || line.mid(i, 3) == "___") {
-        state.target->append(close_tags[SectionType::BOLD_ITALIC]);
-        popState();
-        i += 2;
-    }
-    else {
-        handleNormal(i, ch);
-    }
+    if (line.mid(i, 3) == "***" || line.mid(i, 3) == "___") { popState(); i += 2; }
+    else { handleNormal(i, ch); }
 }
 
 void InlineParser::handleStrikethrough(qsizetype &i, const QChar &ch) {
-    if (line.mid(i, 2) == "~~") {
-        state.target->append(close_tags[SectionType::STRIKETHROUGH]);
-        popState();
-        ++i;
-    }
-    else {
-        handleNormal(i, ch);
-    }
+    if (line.mid(i, 2) == "~~") { popState(); ++i; }
+    else { handleNormal(i, ch); }
 }
 
 void InlineParser::handleHighlight(qsizetype &i, const QChar &ch) {
-    if (line.mid(i, 2) == "==") {
-        state.target->append(close_tags[SectionType::HIGHLIGHT]);
+    if (line.mid(i, 2) == "==") { popState(); ++i; }
+    else { handleNormal(i, ch); }
+}
+
+// ── inline code ───────────────────────────────────────────────────────────────
+
+void InlineParser::handleInlineCode(qsizetype &, const QChar &ch) {
+    if (ch == '`') {
+        // Emit InlineCodeNode into the parent frame's target.
+        state_stack.top().target->push_back(
+            std::make_unique<InlineCodeNode>(buffer));
+        buffer.clear();
         popState();
-        ++i;
-    }
-    else {
-        handleNormal(i, ch);
+    } else {
+        buffer += ch;
     }
 }
 
+// ── link ──────────────────────────────────────────────────────────────────────
+// Strategy: link text is inline-parsed into `captured`. On ']':
+//   - if followed by '(' → switch to URL capture (LINK_URL), keep captured.
+//   - else → fallback: emit "[" + captured children as text + "]".
+// On ')': build LinkNode(href, children=captured), append to parent target.
+
 void InlineParser::handleLinkText(qsizetype &i, const QChar &ch) {
     if (ch == ']') {
-        temp_text = buffer;
-        buffer.clear();
+        flushText(); // flush into captured
         if (i + 1 < line.length() && line[i + 1] == '(') {
             ++i;
+            buffer.clear();
             state.type = SectionType::LINK_URL;
-            state.target = &buffer;
+            // state.target stays &captured (unused in URL mode)
+        } else {
+            // Fallback: reconstruct "[text]" as a plain TextNode.
+            // Collect plain text from captured (best-effort).
+            QString flat = "[";
+            for (const auto &c : captured) {
+                if (c->type() == NodeType::Text)
+                    flat += static_cast<const TextNode &>(*c).text();
+                else if (c->type() == NodeType::RawText)
+                    flat += static_cast<const RawTextNode &>(*c).text();
+                else if (c->type() == NodeType::InlineCode)
+                    flat += static_cast<const InlineCodeNode &>(*c).code();
+            }
+            flat += "]";
+            captured.clear();
+            // Restore parent frame and emit fallback text.
+            state = state_stack.pop();
+            state.target->push_back(std::make_unique<TextNode>(flat));
         }
-        else {
-            html.append(QString("[%1]").arg(temp_text));
-            popState();
-        }
-    }
-    else {
+    } else {
         handleNormal(i, ch);
     }
 }
 
 void InlineParser::handleLinkUrl(qsizetype &i, const QChar &ch) {
+    auto commit = [&](const QString &href) {
+        // Build LinkNode; move captured children into it.
+        auto link = std::make_unique<LinkNode>(href);
+        for (auto &c : captured) link->appendChild(std::move(c));
+        captured.clear();
+        // Restore parent frame and append the link.
+        state = state_stack.pop();
+        state.target->push_back(std::move(link));
+    };
     if (ch == ')') {
-        temp_url = buffer;
-        html.append(QString(R"(<a href="%1">%2</a>)")
-                .arg(temp_url)
-                .arg(temp_text.trimmed().isEmpty() ? temp_url : temp_text));
-        popState();
-    }
-    else if (ch == ' ' && line.mid(i + 1, 6) == "&quot;") {
-        // optional title: skip everything until closing ')'
-        temp_url = buffer;
-        while (i < line.length() && line[i] != ')') { ++i; }
-        html.append(QString(R"(<a href="%1">%2</a>)")
-                .arg(temp_url)
-                .arg(temp_text.trimmed().isEmpty() ? temp_url : temp_text));
-        popState();
-    }
-    else {
-        state.target->append(ch);
+        commit(buffer);
+        buffer.clear();
+    } else if (ch == ' ' &&
+               (line.mid(i + 1, 6) == "&quot;" || line.mid(i + 1, 1) == "\"")) {
+        // Optional title starts here (raw '"' or pre-escaped '&quot;').
+        QString href = buffer;
+        buffer.clear();
+        while (i < line.length() && line[i] != ')') ++i;
+        commit(href);
+    } else {
+        buffer += ch;
     }
 }
+
+// ── image ─────────────────────────────────────────────────────────────────────
 
 void InlineParser::handleImageAlt(qsizetype &i, const QChar &ch) {
     if (ch == ']') {
@@ -263,35 +273,33 @@ void InlineParser::handleImageAlt(qsizetype &i, const QChar &ch) {
         if (i + 1 < line.length() && line[i + 1] == '(') {
             ++i;
             state.type = SectionType::IMAGE_URL;
-        }
-        else {
-            html.append(QString("![%1]").arg(temp_text));
+        } else {
+            NodeList *parent = state_stack.top().target;
+            parent->push_back(
+                std::make_unique<TextNode>("![" + temp_text + "]"));
             popState();
         }
-    }
-    else {
-        state.target->append(ch);
+    } else {
+        buffer += ch;
     }
 }
 
 void InlineParser::handleImageUrl(qsizetype &i, const QChar &ch) {
+    auto commit = [&](const QString &src) {
+        NodeList *parent = state_stack.top().target;
+        parent->push_back(std::make_unique<ImageNode>(src, temp_text));
+        buffer.clear();
+        popState();
+    };
     if (ch == ')') {
-        temp_url = buffer;
-        html.append(QString(R"(<img src="%1" alt="%2" />)")
-                .arg(temp_url)
-                .arg(temp_text));
-        popState();
-    }
-    else if (ch == ' ' && line.mid(i + 1, 6) == "&quot;") {
-        // optional title: skip everything until closing ')'
-        temp_url = buffer;
-        while (i < line.length() && line[i] != ')') { ++i; }
-        html.append(QString(R"(<img src="%1" alt="%2" />)")
-                .arg(temp_url)
-                .arg(temp_text));
-        popState();
-    }
-    else {
-        state.target->append(ch);
+        commit(buffer);
+    } else if (ch == ' ' &&
+               (line.mid(i + 1, 6) == "&quot;" || line.mid(i + 1, 1) == "\"")) {
+        QString src = buffer;
+        buffer.clear();
+        while (i < line.length() && line[i] != ')') ++i;
+        commit(src);
+    } else {
+        buffer += ch;
     }
 }

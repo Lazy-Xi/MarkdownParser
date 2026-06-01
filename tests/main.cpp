@@ -1,3 +1,4 @@
+#include "test_HtmlRenderer.h"
 #include "test_Section.h"
 
 #include "SectionType.h"
@@ -33,6 +34,11 @@ int main(int argc, char *argv[]) {
 
     for (auto &t : tests2) {
         test_Section2 test(t.first, t.second);
+        status |= QTest::qExec(&test, argc, argv);
+    }
+
+    {
+        test_HtmlRenderer test;
         status |= QTest::qExec(&test, argc, argv);
     }
 
