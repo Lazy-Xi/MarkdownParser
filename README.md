@@ -1,12 +1,36 @@
 # MarkdownParser
 
-This is library for Markdown parsing, implemented based on C++ Qt6.
+A Markdown-to-HTML library implemented in C++23 on top of Qt6 (Core). It converts a Markdown string into a complete, styled HTML document.
+
+## Features
+
+- Block elements: headings, paragraphs, ordered/unordered lists (nestable), block quotes (nestable), code blocks, tables, horizontal rules, and raw HTML.
+- Inline elements: bold, italic, bold-italic, highlight, strikethrough, inline code, links, images, and escapes.
+- Emits a full HTML document with an embedded, minified default stylesheet; the first `<h1>` becomes the document `<title>`.
+- Customizable styling via `setStyleSheet`.
+
+## Usage
+
+Link against the `MarkdownParser` target and Qt6::Core, then call `toHtml`:
+
+```cpp
+#include "MarkdownParser.h"
+#include <QString>
+
+MarkdownParser parser;
+// Optional: override the default stylesheet.
+// parser.setStyleSheet("body { font-family: sans-serif; }");
+
+const QString html = parser.toHtml("# Hello\n\nThis is **Markdown**.");
+```
+
+The returned string is a self-contained `<html>…</html>` document ready to write to a `.html` file.
 
 ## Build
 
 ### Dependencies
 
-- cmake: version **3.16** minimum
+- cmake: version **3.19** minimum (required for CMake presets)
 - Qt: **6.9.0 msvc2022\_64** is recommended (Other versions are untested but presumably available)
 
 ### Windows
