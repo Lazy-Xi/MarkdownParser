@@ -16,7 +16,7 @@ add_custom_target(run_samples ALL
         ${CMAKE_SOURCE_DIR}/samples_output
     COMMAND ${CMAKE_COMMAND} -E env
         "PATH=${CMAKE_PREFIX_PATH}/bin;$ENV{PATH}"
-        ${PROJECT_NAME}_samples
+        $<TARGET_FILE:${PROJECT_NAME}_samples>
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Running conversion samples..."
 )

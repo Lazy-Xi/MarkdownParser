@@ -45,5 +45,3 @@ private slots:
 	void testToHtml_data();
 	void testToHtml();
 };
-
-#include "test_Section.moc"

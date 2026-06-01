@@ -1,11 +1,10 @@
-﻿cmake_minimum_required(VERSION 3.16)
+﻿cmake_minimum_required(VERSION 3.19)
 project(MarkdownParser LANGUAGES CXX)
 
 include(cmake/qt.cmake)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_PREFIX_PATH "T:/Qt/6.9.0/msvc2022_64")
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR}
@@ -100,6 +99,6 @@ if(BUILD_SAMPLES)
 endif()
 
 if(BUILD_TESTS)
-    add_subdirectory(tests)
     enable_testing()
+    add_subdirectory(tests)
 endif()

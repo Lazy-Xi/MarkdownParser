@@ -1,0 +1,13 @@
+{
+  "configurations": [
+    {
+      "compileCommands": "${workspaceFolder}/build/mingw/compile_commands.json",
+      "compilerPath": "T:/Qt/Tools/mingw1120_64/bin/g++.exe",
+      "cppStandard": "c++23",
+      "cStandard": "c17",
+      "intelliSenseMode": "windows-gcc-x64",
+      "name": "MinGW"
+    }
+  ],
+  "version": 4
+}

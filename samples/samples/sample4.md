@@ -17,10 +17,13 @@ Qt 是一个功能强大的跨平台 C++ 图形用户界面（GUI）框架，广
 ## 🛠️ 基本使用流程
 
 ### 1. 安装 Qt 和 Qt Creator
+
 你可以从 Qt 官网 下载并安装 Qt SDK 和 Qt Creator IDE。
 
 ### 2. 创建一个 Qt 项目
+
 在 Qt Creator 中：
+
 - 新建项目 → Qt Widgets Application
 - 设置项目名称和路径
 - 选择构建套件（例如 Desktop Qt 6.5.0 GCC 64bit）
@@ -54,13 +57,13 @@ QObject::connect(&button, &QPushButton::clicked, {
 
 ## 📦 常用模块简介
 
-| 模块        | 功能描述 |
-|-------------|----------|
-| QtCore      | 提供核心类，如字符串、时间、文件、线程等 |
-| QtGui       | 图形处理，如图像、字体、颜色等 |
-| QtWidgets   | 提供窗口控件，如按钮、标签、表格等 |
-| QtNetwork   | 网络编程支持，如 TCP/UDP、HTTP 等 |
-| QtMultimedia| 音视频处理 |
+| 模块         | 功能描述                                 |
+| ------------ | ---------------------------------------- |
+| QtCore       | 提供核心类，如字符串、时间、文件、线程等 |
+| QtGui        | 图形处理，如图像、字体、颜色等           |
+| QtWidgets    | 提供窗口控件，如按钮、标签、表格等       |
+| QtNetwork    | 网络编程支持，如 TCP/UDP、HTTP 等        |
+| QtMultimedia | 音视频处理                               |
 
 ---
 

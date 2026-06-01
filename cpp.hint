@@ -1,7 +1,0 @@
-#define MARKDOWNPARSER_API
-
-#include <QtCore/QObject>
-#include <qtmetamacros.h>
-
-#define Q_OBJECT
-#define slots

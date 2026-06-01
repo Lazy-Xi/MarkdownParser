@@ -12,6 +12,24 @@
           "checksum": "wVa86FgEkvdCTVp1/nxvrkaemJc="
         }
       }
+    },
+    {
+      "name": "mingw",
+      "displayName": "MinGW (Qt 6.5.0 mingw_64)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/mingw",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "T:/Qt/Tools/mingw1120_64/bin/g++.exe",
+        "CMAKE_PREFIX_PATH": "T:/Qt/6.5.0/mingw_64",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "mingw",
+      "configurePreset": "mingw"
     }
   ],
   "vendor": {
