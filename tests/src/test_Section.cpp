@@ -1,9 +1,9 @@
 #include "test_Section.h"
 
-#include "config.h"
-#include "section/AbstractSection.h"
 #include "SectionFactory.h"
 #include "SectionType.h"
+#include "config.h"
+#include "section/AbstractSection.h"
 
 #include <qdir.h>
 #include <qfile.h>
@@ -18,26 +18,27 @@
 #include <qtestcase.h>
 #include <qtestdata.h>
 
-static AbstractSection2::LinesType parseItem(const QJsonValue& val);
+static AbstractSection2::LinesType parseItem(const QJsonValue &val);
 
 void test_Section1::testToHtml_data() {
-	QTest::addColumn<AbstractSection1::LinesType>("lines");
-	QTest::addColumn<QString>("expected");
+    QTest::addColumn<AbstractSection1::LinesType>("lines");
+    QTest::addColumn<QString>("expected");
 
-	loadTestData(data_path, "to html");
+    loadTestData(data_path, "to html");
 }
 
 void test_Section1::testToHtml() {
-	QFETCH(AbstractSection1::LinesType, lines);
-	QFETCH(QString, expected);
+    QFETCH(AbstractSection1::LinesType, lines);
+    QFETCH(QString, expected);
 
-	auto section(SectionFactory::createSection({ lines, type }));
+    auto section(SectionFactory::createSection({lines, type}));
 
-	QCOMPARE(section->toHtml(), expected);
+    QCOMPARE(section->toHtml(), expected);
 }
 
-void test_Section1::loadTestData(const QString& path, const QString& item) {
-    static const QDir cases_dir(QDir(QString::fromUtf8(RESOURCE_PATH)).filePath("cases"));
+void test_Section1::loadTestData(const QString &path, const QString &item) {
+    static const QDir cases_dir(
+        QDir(QString::fromUtf8(RESOURCE_PATH)).filePath("cases"));
 
     QFile file(cases_dir.filePath(path));
     if (!file.open(QIODevice::ReadOnly)) {
@@ -48,11 +49,11 @@ void test_Section1::loadTestData(const QString& path, const QString& item) {
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     QJsonArray array = doc.object()[item].toArray();
 
-    for (const QJsonValue& val : array) {
+    for (const QJsonValue &val : array) {
         QJsonObject obj = val.toObject();
         QString name = obj["name"].toString();
         AbstractSection1::LinesType lines;
-        for (const QJsonValue& line : obj["lines"].toArray()) {
+        for (const QJsonValue &line : obj["lines"].toArray()) {
             lines << line.toString();
         }
         QString expected = obj["expected"].toString();
@@ -61,22 +62,23 @@ void test_Section1::loadTestData(const QString& path, const QString& item) {
 }
 
 void test_Section2::testToHtml_data() {
-	QTest::addColumn<AbstractSection2::LinesType>("lines");
-	QTest::addColumn<QString>("expected");
-	loadTestData(data_path, "to html");
+    QTest::addColumn<AbstractSection2::LinesType>("lines");
+    QTest::addColumn<QString>("expected");
+    loadTestData(data_path, "to html");
 }
 
 void test_Section2::testToHtml() {
-	QFETCH(AbstractSection2::LinesType, lines);
-	QFETCH(QString, expected);
+    QFETCH(AbstractSection2::LinesType, lines);
+    QFETCH(QString, expected);
 
-	auto section(SectionFactory::createSection({ lines, type }));
+    auto section(SectionFactory::createSection({lines, type}));
 
-	QCOMPARE(section->toHtml(), expected);
+    QCOMPARE(section->toHtml(), expected);
 }
 
-void test_Section2::loadTestData(const QString& path, const QString& item) {
-    static const QDir cases_dir(QDir(QString::fromUtf8(RESOURCE_PATH)).filePath("cases"));
+void test_Section2::loadTestData(const QString &path, const QString &item) {
+    static const QDir cases_dir(
+        QDir(QString::fromUtf8(RESOURCE_PATH)).filePath("cases"));
 
     QFile file(cases_dir.filePath(path));
     if (!file.open(QIODevice::ReadOnly)) {
@@ -87,7 +89,7 @@ void test_Section2::loadTestData(const QString& path, const QString& item) {
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     QJsonArray array = doc.object()[item].toArray();
 
-    for (const QJsonValue& val : array) {
+    for (const QJsonValue &val : array) {
         QJsonObject obj = val.toObject();
         QString name = obj["name"].toString();
         AbstractSection2::LinesType lines = parseItem(obj["lines"]);
@@ -96,9 +98,9 @@ void test_Section2::loadTestData(const QString& path, const QString& item) {
     }
 }
 
-static AbstractSection2::LinesType parseItem(const QJsonValue& val) {
+static AbstractSection2::LinesType parseItem(const QJsonValue &val) {
     AbstractSection2::LinesType lines = {};
-    for (const QJsonValue& item : val.toArray()) {
+    for (const QJsonValue &item : val.toArray()) {
         if (item.isString()) {
             lines << item.toString();
             continue;
@@ -106,16 +108,18 @@ static AbstractSection2::LinesType parseItem(const QJsonValue& val) {
 
         QJsonObject obj = item.toObject();
         SectionType type = sectionTypeReflect(obj["section"].toString());
-        if (QSet({ SectionType::ORDERED_LIST, SectionType::QUOTE, 
-            SectionType::UNORDERED_LIST }).contains(type)) {
-            lines << SectionFactory::createSection({ parseItem(obj["lines"]), type });
+        if (QSet({SectionType::ORDERED_LIST, SectionType::QUOTE,
+                     SectionType::UNORDERED_LIST})
+                .contains(type)) {
+            lines << SectionFactory::createSection(
+                {parseItem(obj["lines"]), type});
         }
         else {
             AbstractSection1::LinesType _lines = {};
-            for (const QJsonValue& line : obj["lines"].toArray()) {
+            for (const QJsonValue &line : obj["lines"].toArray()) {
                 _lines << line.toString();
             }
-            lines << SectionFactory::createSection({ _lines, type });
+            lines << SectionFactory::createSection({_lines, type});
         }
     }
     return lines;

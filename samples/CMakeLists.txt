@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 
 set(RESOURCE_PATH ${CMAKE_SOURCE_DIR})
 configure_file(config.h.in config.h)

@@ -1,10 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
-
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Test)
-find_package(Qt${QT_VERSION_MAJOR}
-    COMPONENTS
-        Test
-)
+cmake_minimum_required(VERSION 3.19)
 
 set(RESOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 configure_file(config.h.in config.h)
@@ -26,6 +20,13 @@ target_include_directories(${PROJECT_NAME}_tests
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_BINARY_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}
+)
+cmake_minimum_required(VERSION 3.16)
+
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Test)
+find_package(Qt${QT_VERSION_MAJOR}
+    COMPONENTS
+        Test
 )
 
 target_link_libraries(${PROJECT_NAME}_tests

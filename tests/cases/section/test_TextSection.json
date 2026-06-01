@@ -49,6 +49,55 @@
         "This is a [link with **bold** text](https://www.google.com)."
       ],
       "expected": "<p>This is a <strong>bold <em>italic</em> text</strong> example.\nThis is a <del>strikethrough <strong>bold</strong></del> example.\nThis is a <mark>highlighted <em>italic</em> text</mark> example.\nThis is a <a href=\"https://www.google.com\">link with <strong>bold</strong> text</a>.</p>"
+    },
+    {
+      "name": "underscore inside word is literal",
+      "lines": [
+        "snake_case_variable and a_b stay literal."
+      ],
+      "expected": "<p>snake_case_variable and a_b stay literal.</p>"
+    },
+    {
+      "name": "asterisk inside inline code is literal",
+      "lines": [
+        "Use `a * b * c` and `*x*` literally."
+      ],
+      "expected": "<p>Use <code>a * b * c</code> and <code>*x*</code> literally.</p>"
+    },
+    {
+      "name": "html special characters are escaped",
+      "lines": [
+        "5 < 6 & 7 > 4 says \"hi\""
+      ],
+      "expected": "<p>5 &lt; 6 &amp; 7 &gt; 4 says &quot;hi&quot;</p>"
+    },
+    {
+      "name": "escaped inline markers",
+      "lines": [
+        "\\*not italic\\* and \\`not code\\`"
+      ],
+      "expected": "<p>*not italic* and `not code`</p>"
+    },
+    {
+      "name": "link with optional title",
+      "lines": [
+        "See [text](https://example.com \"my title\") now."
+      ],
+      "expected": "<p>See <a href=\"https://example.com\">text</a> now.</p>"
+    },
+    {
+      "name": "unclosed emphasis auto closes at end",
+      "lines": [
+        "This is **bold without closing"
+      ],
+      "expected": "<p>This is <strong>bold without closing</strong></p>"
+    },
+    {
+      "name": "nested unclosed spans close inner first",
+      "lines": [
+        "A **bold *italic and ~~strike to the end"
+      ],
+      "expected": "<p>A <strong>bold <em>italic and <del>strike to the end</del></em></strong></p>"
     }
   ]
 }
