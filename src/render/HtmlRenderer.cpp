@@ -2,40 +2,34 @@
 
 #include "node/BlockNodes.h"
 #include "node/InlineNodes.h"
-#include "node/Node.h"
 
-#include <qregularexpression.h>
-#include <qstring.h>
-#include <qtypes.h>
+#include <QRegularExpression>
 
 #include <memory>
-#include <utility>
-#include <vector>
 
 static std::pair<const char *, const char *> spanTags(SpanKind k) {
     switch (k) {
-    case SpanKind::Strong:         return {"<strong>",      "</strong>"};
-    case SpanKind::StrongEmphasis: return {"<strong><em>",  "</em></strong>"};
-    case SpanKind::Strikethrough:  return {"<del>",         "</del>"};
-    case SpanKind::Highlight:      return {"<mark>",        "</mark>"};
-    default:                       return {"<em>",          "</em>"};
+    case SpanKind::Strong: return {"<strong>", "</strong>"};
+    case SpanKind::StrongEmphasis:
+        return {"<strong><em>", "</em></strong>"};
+    case SpanKind::Strikethrough: return {"<del>", "</del>"};
+    case SpanKind::Highlight: return {"<mark>", "</mark>"};
+    default: return {"<em>", "</em>"};
     }
 }
 
 namespace {
 QString alignStr(Align a) {
     switch (a) {
-    case Align::CENTER:
-        return "center";
-    case Align::RIGHT:
-        return "right";
+    case Align::CENTER: return "center";
+    case Align::RIGHT: return "right";
     case Align::LEFT:
-    default:
-        return "left";
+    default: return "left";
     }
 }
 
-// Plain (unescaped, tag-free) text of an inline subtree, for heading slug ids.
+// Plain (unescaped, tag-free) text of an inline subtree, for heading
+// slug ids.
 QString plainText(const Node &n) {
     switch (n.type()) {
     case NodeType::Text:
@@ -44,8 +38,7 @@ QString plainText(const Node &n) {
         return static_cast<const RawTextNode &>(n).text();
     case NodeType::InlineCode:
         return static_cast<const InlineCodeNode &>(n).code();
-    default:
-        break;
+    default: break;
     }
     QString s;
     for (const auto &c : n.children()) {
@@ -54,15 +47,17 @@ QString plainText(const Node &n) {
     return s;
 }
 
-// Heading slug: plain text, lower-cased, runs of space/underscore → '-'.
+// Heading slug: plain text, lower-cased, runs of space/underscore →
+// '-'.
 QString slugify(const Node &heading) {
     return plainText(heading).trimmed().toLower().replace(
         QRegularExpression(R"([\s_]+)"), "-");
 }
 
-// DFS-collect headings into a flat list for table-of-contents generation.
-void collectHeadings(const Node &n,
-    std::vector<std::pair<int, QString>> &out) {
+// DFS-collect headings into a flat list for table-of-contents
+// generation.
+void collectHeadings(
+    const Node &n, std::vector<std::pair<int, QString>> &out) {
     for (const auto &c : n.children()) {
         if (c->type() == NodeType::Heading) {
             const auto &h = static_cast<const HeadingNode &>(*c);
@@ -75,12 +70,14 @@ void collectHeadings(const Node &n,
 
 QString HtmlRenderer::render(const Node &root) {
     out_.clear();
-    // Pre-collect headings so a TocNode anywhere in the tree can render them.
+    // Pre-collect headings so a TocNode anywhere in the tree can
+    // render them.
     headings_.clear();
     std::vector<std::pair<int, QString>> hs;
     collectHeadings(root, hs);
     for (const auto &[level, text] : hs) {
-        QString slug = text.toLower().replace(QRegularExpression(R"([\s_]+)"), "-");
+        QString slug = text.toLower().replace(
+            QRegularExpression(R"([\s_]+)"), "-");
         headings_.push_back({level, text, slug});
     }
     root.accept(*this);
@@ -102,7 +99,8 @@ void HtmlRenderer::renderChildren(const Node &n) {
     }
 }
 
-// ── block nodes ──────────────────────────────────────────────────────────────
+// ── block nodes
+// ──────────────────────────────────────────────────────────────
 
 void HtmlRenderer::visit(const DocumentNode &n) {
     out_ += "<article>";
@@ -111,7 +109,8 @@ void HtmlRenderer::visit(const DocumentNode &n) {
 }
 
 void HtmlRenderer::visit(const HeadingNode &n) {
-    out_ += QString(R"(<h%1 id="%2">)").arg(n.level()).arg(slugify(n));
+    out_ +=
+        QString(R"(<h%1 id="%2">)").arg(n.level()).arg(slugify(n));
     renderChildren(n);
     out_ += QString("</h%1>").arg(n.level());
 }
@@ -131,13 +130,15 @@ void HtmlRenderer::visit(const CodeBlockNode &n) {
 }
 
 void HtmlRenderer::visit(const HtmlBlockNode &n) {
-    // Reproduce HtmlSection::toHtml: trim each line, join with space when the
-    // current line doesn't end with '>' and the next doesn't start with '<'.
+    // Reproduce HtmlSection::toHtml: trim each line, join with space
+    // when the current line doesn't end with '>' and the next doesn't
+    // start with '<'.
     out_ += "<div>";
     const auto &lines = n.lines();
     for (qsizetype i = 0; i < lines.size(); ++i) {
         out_ += lines[i].trimmed();
-        if (i < lines.size() - 1 && !lines[i].trimmed().endsWith(">") &&
+        if (i < lines.size() - 1 &&
+            !lines[i].trimmed().endsWith(">") &&
             !lines[i + 1].trimmed().startsWith("<")) {
             out_ += " ";
         }
@@ -145,7 +146,9 @@ void HtmlRenderer::visit(const HtmlBlockNode &n) {
     out_ += "</div>";
 }
 
-void HtmlRenderer::visit(const ThematicBreakNode &) { out_ += "<hr />"; }
+void HtmlRenderer::visit(const ThematicBreakNode &) {
+    out_ += "<hr />";
+}
 
 void HtmlRenderer::visit(const TableNode &n) {
     out_ += "<table>";
@@ -168,7 +171,9 @@ void HtmlRenderer::visit(const TableRowNode &n) {
 
 void HtmlRenderer::visit(const TableCellNode &n) {
     const QString tag = n.header() ? "th" : "td";
-    out_ += QString(R"(<%1 align="%2">)").arg(tag).arg(alignStr(n.align()));
+    out_ += QString(R"(<%1 align="%2">)")
+                .arg(tag)
+                .arg(alignStr(n.align()));
     renderChildren(n);
     out_ += QString("</%1>").arg(tag);
 }
@@ -201,7 +206,8 @@ void HtmlRenderer::visit(const TocNode &) {
 
     auto item = [&](const HeadingEntry &h) {
         out_ += QString(R"(<li><a href="#%1">%2</a>)")
-                    .arg(h.slug).arg(escape(h.text));
+                    .arg(h.slug)
+                    .arg(escape(h.text));
     };
 
     out_ += "<nav class=\"toc\"><ul>";
@@ -211,11 +217,14 @@ void HtmlRenderer::visit(const TocNode &) {
         int depth = h.level - base;
         if (first) {
             first = false;
-        } else if (depth > prev) {
+        }
+        else if (depth > prev) {
             for (int d = prev; d < depth; ++d) out_ += "<ul>";
-        } else if (depth == prev) {
+        }
+        else if (depth == prev) {
             out_ += "</li>";
-        } else {
+        }
+        else {
             out_ += "</li>";
             for (int d = prev; d > depth; --d) out_ += "</ul></li>";
         }
@@ -227,9 +236,12 @@ void HtmlRenderer::visit(const TocNode &) {
     out_ += "</ul></nav>";
 }
 
-// ── inline nodes ─────────────────────────────────────────────────────────────
+// ── inline nodes
+// ─────────────────────────────────────────────────────────────
 
-void HtmlRenderer::visit(const TextNode &n) { out_ += escape(n.text()); }
+void HtmlRenderer::visit(const TextNode &n) {
+    out_ += escape(n.text());
+}
 
 void HtmlRenderer::visit(const RawTextNode &n) { out_ += n.text(); }
 
@@ -251,7 +263,9 @@ void HtmlRenderer::visit(const LinkNode &n) {
 }
 
 void HtmlRenderer::visit(const ImageNode &n) {
-    out_ += QString(R"(<img src="%1" alt="%2" />)").arg(n.src()).arg(n.alt());
+    out_ += QString(R"(<img src="%1" alt="%2" />)")
+                .arg(n.src())
+                .arg(n.alt());
 }
 
 void HtmlRenderer::visit(const LineBreakNode &) { out_ += "<br />"; }

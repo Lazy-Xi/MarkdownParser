@@ -3,7 +3,7 @@
 #include "SectionType.h"
 #include "export.h"
 
-#include <qstring.h>
+#include <QString>
 
 class MARKDOWNPARSER_API SectionFactory {
 public:

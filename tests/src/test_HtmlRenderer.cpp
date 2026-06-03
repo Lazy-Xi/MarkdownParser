@@ -4,8 +4,7 @@
 #include "node/InlineNodes.h"
 #include "render/HtmlRenderer.h"
 
-#include <qstring.h>
-#include <qtestcase.h>
+#include <QtTest/QTest>
 
 #include <memory>
 #include <utility>
@@ -36,9 +35,11 @@ void test_HtmlRenderer::testParagraphWithInlines() {
 
 void test_HtmlRenderer::testCodeBlockEscapes() {
     // Raw text in the node; renderer escapes at emit time.
-    auto cb = std::make_unique<CodeBlockNode>(QStringList {"a < b && c > d"});
+    auto cb = std::make_unique<CodeBlockNode>(
+        QStringList {"a < b && c > d"});
     QCOMPARE(HtmlRenderer().render(*cb),
-        QString("<pre><code>a &lt; b &amp;&amp; c &gt; d\n</code></pre>"));
+        QString("<pre><code>a &lt; b &amp;&amp; c &gt; "
+                "d\n</code></pre>"));
 }
 
 void test_HtmlRenderer::testList() {
@@ -80,8 +81,9 @@ void test_HtmlRenderer::testTable() {
     row->appendChild(std::move(dc));
     table->appendChild(std::move(row));
     QCOMPARE(HtmlRenderer().render(*table),
-        QString(R"(<table><thead><tr><th align="center">H</th></tr></thead>)"
-                R"(<tbody><tr><td align="left">C</td></tr></tbody></table>)"));
+        QString(
+            R"(<table><thead><tr><th align="center">H</th></tr></thead>)"
+            R"(<tbody><tr><td align="left">C</td></tr></tbody></table>)"));
 }
 
 void test_HtmlRenderer::testLinkAndImage() {
@@ -97,7 +99,8 @@ void test_HtmlRenderer::testLinkAndImage() {
 
 void test_HtmlRenderer::testHeadingSlugPlainText() {
     // Slug is built from plain text, stripping inline markers/tags.
-    auto h = std::make_unique<HeadingNode>(1, "Title 1 *italic* **bold** `code`");
+    auto h = std::make_unique<HeadingNode>(
+        1, "Title 1 *italic* **bold** `code`");
     h->appendChild(text("Title 1 "));
     auto em = std::make_unique<EmphasisNode>(SpanKind::Emphasis);
     em->appendChild(text("italic"));
@@ -109,13 +112,14 @@ void test_HtmlRenderer::testHeadingSlugPlainText() {
     h->appendChild(text(" "));
     h->appendChild(std::make_unique<InlineCodeNode>("code"));
     QCOMPARE(HtmlRenderer().render(*h),
-        QString(R"(<h1 id="title-1-italic-bold-code">Title 1 <em>italic</em> )"
-                R"(<strong>bold</strong> <code>code</code></h1>)"));
+        QString(
+            R"(<h1 id="title-1-italic-bold-code">Title 1 <em>italic</em> )"
+            R"(<strong>bold</strong> <code>code</code></h1>)"));
 }
 
 void test_HtmlRenderer::testToc() {
-    // Document: TocNode followed by headings of varying levels. The TocNode
-    // renders a nested <nav> list mirroring heading levels.
+    // Document: TocNode followed by headings of varying levels. The
+    // TocNode renders a nested <nav> list mirroring heading levels.
     auto heading = [](int level, const QString &s) {
         auto h = std::make_unique<HeadingNode>(level, s);
         h->appendChild(std::make_unique<TextNode>(s));
@@ -129,15 +133,14 @@ void test_HtmlRenderer::testToc() {
     doc->appendChild(heading(3, "D"));
     doc->appendChild(heading(1, "E"));
 
-    const QString toc =
-        R"(<nav class="toc"><ul>)"
-        R"(<li><a href="#a">A</a><ul>)"
-        R"(<li><a href="#b">B</a></li>)"
-        R"(<li><a href="#c">C</a><ul>)"
-        R"(<li><a href="#d">D</a></li>)"
-        R"(</ul></li></ul></li>)"
-        R"(<li><a href="#e">E</a></li>)"
-        R"(</ul></nav>)";
+    const QString toc = R"(<nav class="toc"><ul>)"
+                        R"(<li><a href="#a">A</a><ul>)"
+                        R"(<li><a href="#b">B</a></li>)"
+                        R"(<li><a href="#c">C</a><ul>)"
+                        R"(<li><a href="#d">D</a></li>)"
+                        R"(</ul></li></ul></li>)"
+                        R"(<li><a href="#e">E</a></li>)"
+                        R"(</ul></nav>)";
     QCOMPARE(HtmlRenderer().render(*doc),
         "<article>" + toc +
             R"(<h1 id="a">A</h1><h2 id="b">B</h2><h2 id="c">C</h2>)"

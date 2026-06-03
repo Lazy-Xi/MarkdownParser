@@ -1,7 +1,8 @@
 #pragma once
 
-// Forward declarations of every concrete node type. Concrete visitors include
-// node/BlockNodes.h and node/InlineNodes.h for the full definitions.
+// Forward declarations of every concrete node type. Concrete visitors
+// include node/BlockNodes.h and node/InlineNodes.h for the full
+// definitions.
 class DocumentNode;
 class HeadingNode;
 class ParagraphNode;
@@ -23,8 +24,8 @@ class LinkNode;
 class ImageNode;
 class LineBreakNode;
 
-// Visitor over the AST. A new output format (plain text, markdown, TOC) is a new
-// NodeVisitor; node classes stay untouched.
+// Visitor over the AST. A new output format (plain text, markdown,
+// TOC) is a new NodeVisitor; node classes stay untouched.
 class NodeVisitor {
 public:
     virtual ~NodeVisitor() = default;

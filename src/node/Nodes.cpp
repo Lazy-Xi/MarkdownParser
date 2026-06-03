@@ -2,15 +2,18 @@
 #include "node/InlineNodes.h"
 #include "node/NodeVisitor.h"
 
-// accept() bodies for every concrete node. Centralizing them here also anchors
-// each class's vtable to this translation unit, keeping the headers light.
+// accept() bodies for every concrete node. Centralizing them here
+// also anchors each class's vtable to this translation unit, keeping
+// the headers light.
 
 void DocumentNode::accept(NodeVisitor &v) const { v.visit(*this); }
 void HeadingNode::accept(NodeVisitor &v) const { v.visit(*this); }
 void ParagraphNode::accept(NodeVisitor &v) const { v.visit(*this); }
 void CodeBlockNode::accept(NodeVisitor &v) const { v.visit(*this); }
 void HtmlBlockNode::accept(NodeVisitor &v) const { v.visit(*this); }
-void ThematicBreakNode::accept(NodeVisitor &v) const { v.visit(*this); }
+void ThematicBreakNode::accept(NodeVisitor &v) const {
+    v.visit(*this);
+}
 void TableNode::accept(NodeVisitor &v) const { v.visit(*this); }
 void TableRowNode::accept(NodeVisitor &v) const { v.visit(*this); }
 void TableCellNode::accept(NodeVisitor &v) const { v.visit(*this); }

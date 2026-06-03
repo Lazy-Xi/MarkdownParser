@@ -1,7 +1,6 @@
 #include "SectionType.h"
 
-#include <qmap.h>
-#include <qstring.h>
+#include <QMap>
 
 #include <stdexcept>
 
@@ -23,5 +22,7 @@ SectionType sectionTypeReflect(const QString &type) {
         return reflect_map.value(type);
     }
     throw std::runtime_error(
-        QString("SectionType %1 cannot be reflected").arg(type).toUtf8());
+        QString("SectionType %1 cannot be reflected")
+            .arg(type)
+            .toUtf8());
 }

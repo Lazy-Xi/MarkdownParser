@@ -4,8 +4,8 @@
 #include "export.h"
 #include "node/Node.h"
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QString>
+#include <QStringList>
 
 #include <memory>
 

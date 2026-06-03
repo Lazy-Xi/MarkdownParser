@@ -2,10 +2,9 @@
 
 #include "SectionType.h"
 
-#include <qobject.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qtmetamacros.h>
+#include <QObject>
+#include <QString>
+#include <QStringList>
 
 class test_Section {
 public:
@@ -22,6 +21,7 @@ class test_Section1 : public QObject, public test_Section {
 public:
     test_Section1(const QString &data_path, const SectionType &type)
         : test_Section(data_path, type) {}
+
 private:
     void loadTestData(const QString &path, const QString &item);
 private slots:
@@ -34,6 +34,7 @@ class test_Section2 : public QObject, public test_Section {
 public:
     test_Section2(const QString &data_path, const SectionType &type)
         : test_Section(data_path, type) {}
+
 private:
     void loadTestData(const QString &path, const QString &item);
 private slots:

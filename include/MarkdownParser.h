@@ -3,8 +3,8 @@
 #include "export.h"
 #include "node/Node.h"
 
+#include <QString>
 #include <memory>
-#include <qstring.h>
 
 class MARKDOWNPARSER_API MarkdownParser {
 public:

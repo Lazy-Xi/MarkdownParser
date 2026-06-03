@@ -1,11 +1,10 @@
 #pragma once
 
-#include <qobject.h>
-#include <qtmetamacros.h>
+#include <QObject>
 
-// Stage 0: validates HtmlRenderer against hand-built AST trees, independent of
-// the parser. Confirms each visit() emits the same HTML the old section classes
-// produced for the equivalent structure.
+// Stage 0: validates HtmlRenderer against hand-built AST trees,
+// independent of the parser. Confirms each visit() emits the same
+// HTML the old section classes produced for the equivalent structure.
 class test_HtmlRenderer : public QObject {
     Q_OBJECT
 

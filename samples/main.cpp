@@ -2,15 +2,9 @@
 
 #include "config.h"
 
-#include <qcontainerfwd.h>
-#include <qdir.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qiodevice.h>
-#include <qlogging.h>
-#include <qstring.h>
-#include <qstringconverter_base.h>
-#include <qtextstream.h>
+#include <QDir>
+#include <QString>
+#include <QStringList>
 
 #include <exception>
 #include <stdexcept>
@@ -28,23 +22,27 @@ int main() {
 
     QStringList filters;
     filters << "*.md";
-    QFileInfoList md_files = input_dir.entryInfoList(filters, QDir::Files);
+    QFileInfoList md_files =
+        input_dir.entryInfoList(filters, QDir::Files);
 
-    if (QFileInfo readme(resource_dir.filePath("README.md")); readme.exists()) {
+    if (QFileInfo readme(resource_dir.filePath("README.md"));
+        readme.exists()) {
         md_files.append(readme);
     }
 
     for (const QFileInfo &file_info : md_files) {
         const QString input_path = file_info.absoluteFilePath();
         const QString output_path = output_dir.absolutePath() + "/" +
-                                    file_info.completeBaseName() + ".html";
+                                    file_info.completeBaseName() +
+                                    ".html";
         translate(input_path, output_path);
     }
 
     return 0;
 }
 
-void translate(const QString &input_path, const QString &output_path) {
+void translate(
+    const QString &input_path, const QString &output_path) {
     static MarkdownParser parser;
 
     try {

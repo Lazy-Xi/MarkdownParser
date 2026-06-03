@@ -3,13 +3,11 @@
 #include "export.h"
 #include "node/Node.h"
 
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QStringList>
 
 #include <utility>
 
 // Block-level nodes.
-
 // Root of the tree; renders as <article>…</article>.
 class MARKDOWNPARSER_API DocumentNode : public Node {
 public:
@@ -17,9 +15,9 @@ public:
     void accept(NodeVisitor &v) const override;
 };
 
-// Heading; children are inlines. raw_text_ is the heading text with markers
-// intact (kept available for callers); the slug id is derived from plain text
-// by the renderer.
+// Heading; children are inlines. raw_text_ is the heading text with
+// markers intact (kept available for callers); the slug id is derived
+// from plain text by the renderer.
 class MARKDOWNPARSER_API HeadingNode : public Node {
 public:
     HeadingNode(int level, QString rawText)
@@ -41,8 +39,9 @@ public:
     void accept(NodeVisitor &v) const override;
 };
 
-// Fenced or indented code block; lines are RAW (renderer escapes). info_ is the
-// fenced-code info string (future syntax-highlight hook).
+// Fenced or indented code block; lines are RAW (renderer escapes).
+// info_ is the fenced-code info string (future syntax-highlight
+// hook).
 class MARKDOWNPARSER_API CodeBlockNode : public Node {
 public:
     explicit CodeBlockNode(QStringList lines, QString info = {})
@@ -114,7 +113,8 @@ public:
 // Ordered or unordered list; children are ListItemNode.
 class MARKDOWNPARSER_API ListNode : public Node {
 public:
-    explicit ListNode(bool ordered) : Node(NodeType::List), ordered_(ordered) {}
+    explicit ListNode(bool ordered)
+        : Node(NodeType::List), ordered_(ordered) {}
     bool ordered() const noexcept { return ordered_; }
     void accept(NodeVisitor &v) const override;
 
@@ -136,8 +136,9 @@ public:
     void accept(NodeVisitor &v) const override;
 };
 
-// Table-of-contents placeholder. Emitted where a <!--TOC--> marker appears; the
-// renderer fills it by collecting the document's headings into a nested list.
+// Table-of-contents placeholder. Emitted where a <!--TOC--> marker
+// appears; the renderer fills it by collecting the document's
+// headings into a nested list.
 class MARKDOWNPARSER_API TocNode : public Node {
 public:
     TocNode() : Node(NodeType::Toc) {}

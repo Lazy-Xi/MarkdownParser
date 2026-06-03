@@ -5,20 +5,17 @@
 #include "config.h"
 #include "render/HtmlRenderer.h"
 
-#include <qdir.h>
-#include <qfile.h>
-#include <qiodevice.h>
-#include <qjsonarray.h>
-#include <qjsondocument.h>
-#include <qjsonobject.h>
-#include <qjsonvalue.h>
-#include <qlogging.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qtestcase.h>
-#include <qtestdata.h>
+#include <QDir>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QString>
+#include <QStringList>
+#include <QtTest/QTest>
 
-static QStringList toMarkdownLines(const QStringList &lines, SectionType type) {
+static QStringList toMarkdownLines(
+    const QStringList &lines, SectionType type) {
     if (type == SectionType::CODE_BLOCK) {
         QStringList out;
         out << "```" << lines << "```";
@@ -36,12 +33,13 @@ static QString renderLines(const QStringList &lines) {
     return out;
 }
 
-// Flatten JSON lines array (may contain nested section objects) into raw
-// Markdown lines. Nested list items get 2-space indent; nested quotes get "> ".
-static QStringList flattenLines(const QJsonValue &val, int indent = 0,
-    int quote_depth = 0);
-static QStringList flattenLines(const QJsonValue &val, int indent,
-    int quote_depth) {
+// Flatten JSON lines array (may contain nested section objects) into
+// raw Markdown lines. Nested list items get 2-space indent; nested
+// quotes get "> ".
+static QStringList flattenLines(
+    const QJsonValue &val, int indent = 0, int quote_depth = 0);
+static QStringList flattenLines(
+    const QJsonValue &val, int indent, int quote_depth) {
     QStringList result;
     const QString pad(indent * 2, ' ');
     const QString qpfx(quote_depth, '>');
@@ -54,21 +52,26 @@ static QStringList flattenLines(const QJsonValue &val, int indent,
         QJsonObject obj = item.toObject();
         const QString sec = obj["section"].toString();
         if (sec == "QUOTE") {
-            result << flattenLines(obj["lines"], indent, quote_depth + 1);
-        } else if (sec == "CODE_BLOCK") {
+            result << flattenLines(
+                obj["lines"], indent, quote_depth + 1);
+        }
+        else if (sec == "CODE_BLOCK") {
             const QString subpad((indent + 1) * 2, ' ');
             result << subpad + "```";
             for (const QJsonValue &l : obj["lines"].toArray())
                 result << subpad + l.toString();
             result << subpad + "```";
-        } else {
-            result << flattenLines(obj["lines"], indent + 1, quote_depth);
+        }
+        else {
+            result << flattenLines(
+                obj["lines"], indent + 1, quote_depth);
         }
     }
     return result;
 }
 
-// ── test_Section1 ─────────────────────────────────────────────────────────────
+// ── test_Section1
+// ─────────────────────────────────────────────────────────────
 
 void test_Section1::testToHtml_data() {
     QTest::addColumn<QStringList>("lines");
@@ -82,7 +85,8 @@ void test_Section1::testToHtml() {
     QCOMPARE(renderLines(lines), expected);
 }
 
-void test_Section1::loadTestData(const QString &path, const QString &item) {
+void test_Section1::loadTestData(
+    const QString &path, const QString &item) {
     static const QDir cases_dir(
         QDir(QString::fromUtf8(RESOURCE_PATH)).filePath("cases"));
     QFile file(cases_dir.filePath(path));
@@ -94,13 +98,16 @@ void test_Section1::loadTestData(const QString &path, const QString &item) {
     for (const QJsonValue &val : doc.object()[item].toArray()) {
         QJsonObject obj = val.toObject();
         QStringList raw;
-        for (const QJsonValue &l : obj["lines"].toArray()) raw << l.toString();
+        for (const QJsonValue &l : obj["lines"].toArray())
+            raw << l.toString();
         QTest::newRow(obj["name"].toString().toUtf8().constData())
-            << toMarkdownLines(raw, type) << obj["expected"].toString();
+            << toMarkdownLines(raw, type)
+            << obj["expected"].toString();
     }
 }
 
-// ── test_Section2 ─────────────────────────────────────────────────────────────
+// ── test_Section2
+// ─────────────────────────────────────────────────────────────
 
 void test_Section2::testToHtml_data() {
     QTest::addColumn<QStringList>("lines");
@@ -114,7 +121,8 @@ void test_Section2::testToHtml() {
     QCOMPARE(renderLines(lines), expected);
 }
 
-void test_Section2::loadTestData(const QString &path, const QString &item) {
+void test_Section2::loadTestData(
+    const QString &path, const QString &item) {
     static const QDir cases_dir(
         QDir(QString::fromUtf8(RESOURCE_PATH)).filePath("cases"));
     QFile file(cases_dir.filePath(path));
@@ -126,6 +134,7 @@ void test_Section2::loadTestData(const QString &path, const QString &item) {
     for (const QJsonValue &val : doc.object()[item].toArray()) {
         QJsonObject obj = val.toObject();
         QTest::newRow(obj["name"].toString().toUtf8().constData())
-            << flattenLines(obj["lines"]) << obj["expected"].toString();
+            << flattenLines(obj["lines"])
+            << obj["expected"].toString();
     }
 }

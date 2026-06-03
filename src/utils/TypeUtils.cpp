@@ -2,8 +2,7 @@
 
 #include "utils/RegexUtils.h"
 
-#include <qset.h>
-#include <qstring.h>
+#include <QSet>
 
 namespace TypeUtils {
 
@@ -50,9 +49,9 @@ bool isHtmlBlock(const QString &line) {
 }
 
 bool isHtmlVoidTag(const QString &tag) {
-    static const QSet<QString> voidTags = {"area", "base", "br", "col", "embed",
-        "hr", "img", "input", "link", "meta", "param", "source", "track",
-        "wbr"};
+    static const QSet<QString> voidTags = {"area", "base", "br",
+        "col", "embed", "hr", "img", "input", "link", "meta", "param",
+        "source", "track", "wbr"};
     return voidTags.contains(tag.toLower());
 }
 
